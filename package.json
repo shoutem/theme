@@ -1,0 +1,60 @@
+{
+  "name": "@shoutem/theme",
+  "version": "0.8.5",
+  "main": "index.js",
+  "description": "Style your components in one place.",
+  "dependencies": {
+    "hoist-non-react-statics": "^1.0.5",
+    "lodash": "^4.10.1"
+  },
+  "peerDependencies": {
+    "react": "^15.1.0",
+    "react-native": ">=0.28.0"
+  },
+  "devDependencies": {
+    "babel": "^6.3.26",
+    "babel-preset-react-native": "^1.9.0",
+    "chai": "^3.4.1",
+    "deep-freeze": "0.0.1",
+    "enzyme": "^2.0.0-rc1",
+    "mocha": "^2.3.4",
+    "react-addons-test-utils": "^15.3.1",
+    "react-dom": "^15.3.1",
+    "react-native-mock": "^0.2.5"
+  },
+  "scripts": {
+    "test": "mocha -R spec --require test-utils/setup.js --require react-native-mock/mock.js --compilers js:babel-core/register $(find . -name '*.spec.js' ! -ipath '*node_modules*')"
+  },
+  "license": "BSD-3-Clause",
+  "maintainers": [
+    {
+      "email": "bruna.andjelic@gmail.com",
+      "name": "bAndelic"
+    },
+    {
+      "email": "belma.dzi@gmail.com",
+      "name": "morrigan"
+    },
+    {
+      "email": "luka.bracanovic@shoutem.com",
+      "name": "MrBr"
+    },
+    {
+      "email": "ivan@shoutem.com",
+      "name": "SoHotSoup"
+    },
+    {
+      "email": "tomislav.tenodi@shoutem.com",
+      "name": "tenodi"
+    },
+    {
+      "email": "vladimir@shoutem.com",
+      "name": "Vunovati"
+    },
+    {
+      "email": "zeljko@shoutem.com",
+      "name": "zrumenjak"
+    }
+  ]
+
+}
