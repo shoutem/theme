@@ -137,7 +137,7 @@ AppRegistry.registerComponent('HelloWorld', () => HelloWorld);
 Finally, run the app!
 
 ```bash
-react-native run-ios
+$ react-native run-ios
 ```
 
 ## UI Toolkit
