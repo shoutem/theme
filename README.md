@@ -26,12 +26,13 @@ $ react-native init HelloWorld
 Install `@shoutem/ui` and `@shoutem/theme` and link them in your project:
 
 ```bash
+$ cd HelloWorld
 $ npm install --save @shoutem/ui
 $ npm install --save @shoutem/theme
 $ rnpm link
 ```
 
-Now, simply copy the following to your `index.ios.js` or `index.android.js` file of React Native project:
+Now, simply copy the following to your `index.ios.js` file of React Native project:
 
 ```JavaScript
 import React, { Component } from 'react';
@@ -131,6 +132,12 @@ class HelloWorld extends Component {
 }
 
 AppRegistry.registerComponent('HelloWorld', () => HelloWorld);
+```
+
+Finally, run the app!
+
+```bash
+react-native run-ios
 ```
 
 ## UI Toolkit
