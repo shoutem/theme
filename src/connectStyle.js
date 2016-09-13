@@ -184,9 +184,21 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
         );
       }
 
+      setNativeProps(nativeProps) {
+        if (this._root.setNativeProps) {
+          this._root.setNativeProps(nativeProps);
+        }
+      }
+
       render() {
         const { addedProps, style } = this.state;
-        return <WrappedComponent {...this.props} {...addedProps} style={style} />;
+        return (
+          <WrappedComponent
+            {...this.props}
+            {...addedProps}
+            style={style}
+            ref={component => this._root = component}
+          />);
       }
     }
 
