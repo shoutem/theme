@@ -1,6 +1,5 @@
 import ShorthandsNormalizerFactory, {
   SIDES,
-  CORNERS,
   HORIZONTAL,
   VERTICAL,
 } from './ShorthandsNormalizerFactory';
@@ -15,7 +14,6 @@ export default class StyleNormalizer {
     this.createNormalizers('margin', [HORIZONTAL, VERTICAL, SIDES]);
     this.createNormalizers('padding', [HORIZONTAL, VERTICAL, SIDES]);
     this.createNormalizers('border', [SIDES], 'Width');
-    this.createNormalizers('border', [CORNERS], 'Radius');
   }
 
   createNormalizers(prop, shorthands, suffix = '') {
