@@ -102,6 +102,7 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
         super(props, context);
         const styleNames = this.resolveStyleNames(props);
         const resolvedStyle = this.resolveStyle(context, props, styleNames);
+        this.setWrappedInstance = this.setWrappedInstance.bind(this);
         this.state = {
           style: resolvedStyle.componentStyle,
           childrenStyle: resolvedStyle.childrenStyle,
@@ -185,9 +186,13 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
       }
 
       setNativeProps(nativeProps) {
-        if (this._root.setNativeProps) {
-          this._root.setNativeProps(nativeProps);
+        if (this.wrappedInstance.setNativeProps) {
+          this.wrappedInstance.setNativeProps(nativeProps);
         }
+      }
+
+      setWrappedInstance(component) {
+        this.wrappedInstance = component;
       }
 
       render() {
@@ -197,7 +202,7 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
             {...this.props}
             {...addedProps}
             style={style}
-            ref={component => this._root = component}
+            ref={this.setWrappedInstance}
           />);
       }
     }
