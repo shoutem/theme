@@ -76,6 +76,7 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
       static childContextTypes = {
         // Provide the parent style to child components
         parentStyle: PropTypes.object,
+        resolveStyle: PropTypes.func,
       };
 
       static propTypes = {
@@ -103,6 +104,7 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
         const styleNames = this.resolveStyleNames(props);
         const resolvedStyle = this.resolveStyle(context, props, styleNames);
         this.setWrappedInstance = this.setWrappedInstance.bind(this);
+        this.resolveConnectedComponentStyle = this.resolveConnectedComponentStyle.bind(this);
         this.state = {
           style: resolvedStyle.componentStyle,
           childrenStyle: resolvedStyle.childrenStyle,
@@ -119,6 +121,7 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
           parentStyle: this.props.virtual ?
             this.context.parentStyle :
             this.state.childrenStyle,
+          resolveStyle: this.resolveConnectedComponentStyle,
         };
       }
 
@@ -134,12 +137,14 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
         }
       }
 
-      resolveAddedProps() {
-        const addedProps = {};
-        if (options.withRef) {
-          addedProps.ref = 'wrappedInstance';
+      setNativeProps(nativeProps) {
+        if (this.wrappedInstance.setNativeProps) {
+          this.wrappedInstance.setNativeProps(nativeProps);
         }
-        return addedProps;
+      }
+
+      setWrappedInstance(component) {
+        this.wrappedInstance = component;
       }
 
       hasStyleNameChanged(nextProps, styleNames) {
@@ -169,6 +174,14 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
         return _.uniq(mapPropsToStyleNames(styleNames, props));
       }
 
+      resolveAddedProps() {
+        const addedProps = {};
+        if (options.withRef) {
+          addedProps.ref = 'wrappedInstance';
+        }
+        return addedProps;
+      }
+
       resolveStyle(context, props, styleNames) {
         const { parentStyle } = context;
         const style = normalizeStyle(props.style);
@@ -185,14 +198,16 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
         );
       }
 
-      setNativeProps(nativeProps) {
-        if (this.wrappedInstance.setNativeProps) {
-          this.wrappedInstance.setNativeProps(nativeProps);
-        }
-      }
-
-      setWrappedInstance(component) {
-        this.wrappedInstance = component;
+      /**
+       * A helper function provided to child components that enables
+       * them to resolve their style for any set of prop values.
+       *
+       * @param props The component props to use to resolve the style values.
+       * @returns {*} The resolved component style.
+       */
+      resolveConnectedComponentStyle(props) {
+        const styleNames = this.resolveStyleNames(props);
+        return this.resolveStyle(this.context, props, styleNames).componentStyle;
       }
 
       render() {
