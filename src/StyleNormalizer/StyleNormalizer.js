@@ -13,8 +13,6 @@ export default class StyleNormalizer {
     this.normalizers = {};
     this.createNormalizers('margin', [HORIZONTAL, VERTICAL, SIDES]);
     this.createNormalizers('padding', [HORIZONTAL, VERTICAL, SIDES]);
-    // Commenting this part for now, to allow for proper borders on images when borderWidth property is used
-    // this.createNormalizers('border', [SIDES], 'Width');
   }
 
   createNormalizers(prop, shorthands, suffix = '') {
