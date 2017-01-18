@@ -2,7 +2,13 @@ import connectStyle from './src/connectStyle';
 import { INCLUDE } from './src/resolveIncludes';
 import StyleProvider from './src/StyleProvider';
 import Theme, { ThemeShape } from './src/Theme';
-import { createVariations, createSharedStyle } from './src/addons';
+import {
+  createVariations,
+  createSharedStyle,
+  changeColorAlpha,
+  getSizeRelativeToReference,
+  inverseColorBrightnessForAmount,
+} from './src/addons';
 import Shapes from './examples/Shapes';
 
 const Examples = {
@@ -17,5 +23,8 @@ export {
   ThemeShape,
   createVariations,
   createSharedStyle,
-  Examples
+  Examples,
+  changeColorAlpha,
+  getSizeRelativeToReference,
+  inverseColorBrightnessForAmount,
 };
