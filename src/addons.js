@@ -1,4 +1,8 @@
+import tinyColor from 'tinycolor2';
+import { Dimensions } from 'react-native';
 import _ from 'lodash';
+
+const window = Dimensions.get('window');
 
 function capitalizeFirstLetter(value) {
   return value.charAt(0).toUpperCase() + value.slice(1);
@@ -90,4 +94,40 @@ export function createSharedStyle(componentNames, sharedStyle = {}, customStyles
 
     return result;
   }, {});
+}
+
+/**
+ * Change color alpha channel even if color wasn't original transparent.
+ * @param color - rgba or hex
+ * @param newAlpha
+ * @returns {*}
+ */
+export function changeColorAlpha(color, newAlpha) {
+  return tinyColor(color).setAlpha(newAlpha).toRgbString();
+}
+
+/**
+ * Makes bright colors darker and dark colors brighter.
+ * @param colorValue - rgba or hex
+ * @param amount
+ * @returns {string}
+ */
+export function inverseColorBrightnessForAmount(colorValue, amount) {
+  const color = tinyColor(colorValue);
+  if (color.isLight()) {
+    return color.darken(amount).toString();
+  }
+  return color.lighten(amount).toString();
+}
+
+const IPHONE_WIDTH = 375;
+/**
+ * Scale dimension as if given value is planned to be like that on iPhone.
+ * Scales by width.
+ * @param dimension - value for iPhone
+ * @param actualRefVal - actual width
+ * @returns {number}
+ */
+export function dimensionRelativeToIphone(dimension, actualRefVal = window.width) {
+  return (dimension / IPHONE_WIDTH) * actualRefVal;
 }
