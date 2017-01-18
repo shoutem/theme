@@ -120,14 +120,15 @@ export function inverseColorBrightnessForAmount(colorValue, amount) {
   return color.lighten(amount).toString();
 }
 
-const IPHONE_WIDTH = 375;
 /**
- * Scale dimension as if given value is planned to be like that on iPhone.
- * Scales by width.
- * @param dimension - value for iPhone
- * @param actualRefVal - actual width
+ * Scale dimension to reference value by taking in consideration actual reference value.
+ * For example, element should be 50px wide on screen wide 375px. If screen actual size is wider
+ * then planned everything is going to be scaled up and vice versa.
+ * @param dimension - wanted value for reference
+ * @param originalRefVal - wanted value reference
+ * @param actualRefVal - actual reference value
  * @returns {number}
  */
-export function dimensionRelativeToIphone(dimension, actualRefVal = window.width) {
-  return (dimension / IPHONE_WIDTH) * actualRefVal;
+export function getSizeRelativeToReference(dimension, originalRefVal, actualRefVal) {
+  return (dimension / originalRefVal) * actualRefVal;
 }
