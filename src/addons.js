@@ -1,4 +1,8 @@
+import tinyColor from 'tinycolor2';
+import { Dimensions } from 'react-native';
 import _ from 'lodash';
+
+const window = Dimensions.get('window');
 
 function capitalizeFirstLetter(value) {
   return value.charAt(0).toUpperCase() + value.slice(1);
@@ -90,4 +94,41 @@ export function createSharedStyle(componentNames, sharedStyle = {}, customStyles
 
     return result;
   }, {});
+}
+
+/**
+ * Change color alpha channel even if color wasn't original transparent.
+ * @param color - rgba or hex
+ * @param newAlpha
+ * @returns {*}
+ */
+export function changeColorAlpha(color, newAlpha) {
+  return tinyColor(color).setAlpha(newAlpha).toRgbString();
+}
+
+/**
+ * Makes bright colors darker and dark colors brighter.
+ * @param colorValue - rgba or hex
+ * @param amount
+ * @returns {string}
+ */
+export function inverseColorBrightnessForAmount(colorValue, amount) {
+  const color = tinyColor(colorValue);
+  if (color.isLight()) {
+    return color.darken(amount).toString();
+  }
+  return color.lighten(amount).toString();
+}
+
+/**
+ * Scale dimension to reference value by taking in consideration actual reference value.
+ * For example, element should be 50px wide on screen wide 375px. If screen actual size is wider
+ * then planned everything is going to be scaled up and vice versa.
+ * @param dimension - wanted value for reference
+ * @param originalRefVal - wanted value reference
+ * @param actualRefVal - actual reference value
+ * @returns {number}
+ */
+export function getSizeRelativeToReference(dimension, originalRefVal, actualRefVal) {
+  return (dimension / originalRefVal) * actualRefVal;
 }
