@@ -71,12 +71,13 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
         theme: ThemeShape,
         // The style inherited from the parent
         parentStyle: PropTypes.object,
+        transformProps: PropTypes.func,
       };
 
       static childContextTypes = {
         // Provide the parent style to child components
         parentStyle: PropTypes.object,
-        resolveStyle: PropTypes.func,
+        transformProps: PropTypes.func,
       };
 
       static propTypes = {
@@ -104,7 +105,7 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
         const styleNames = this.resolveStyleNames(props);
         const resolvedStyle = this.resolveStyle(context, props, styleNames);
         this.setWrappedInstance = this.setWrappedInstance.bind(this);
-        this.resolveConnectedComponentStyle = this.resolveConnectedComponentStyle.bind(this);
+        this.transformProps = this.transformProps.bind(this);
         this.state = {
           style: resolvedStyle.componentStyle,
           childrenStyle: resolvedStyle.childrenStyle,
@@ -121,7 +122,7 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
           parentStyle: this.props.virtual ?
             this.context.parentStyle :
             this.state.childrenStyle,
-          resolveStyle: this.resolveConnectedComponentStyle,
+          transformProps: this.transformProps,
         };
       }
 
@@ -200,14 +201,21 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
 
       /**
        * A helper function provided to child components that enables
-       * them to resolve their style for any set of prop values.
+       * them to get the prop transformations that this component performs.
        *
-       * @param props The component props to use to resolve the style values.
-       * @returns {*} The resolved component style.
+       * @param props The component props to transform.
+       * @returns {*} The transformed props.
        */
-      resolveConnectedComponentStyle(props) {
+      transformProps(props) {
         const styleNames = this.resolveStyleNames(props);
-        return this.resolveStyle(this.context, props, styleNames).componentStyle;
+        return {
+          ...props,
+          style: this.resolveStyle(
+            this.context,
+            props,
+            styleNames
+          ).componentStyle,
+        };
       }
 
       render() {
