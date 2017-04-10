@@ -13,6 +13,10 @@ $ npm install --save @shoutem/theme
 
 All the documentation is available on the [Developer portal](http://shoutem.github.io/docs/ui-toolkit/theme/introduction).
 
+## Community
+
+Join [our community](https://www.facebook.com/groups/shoutem.community/) on Facebook. Also, feel free to ask a question on Stack Overflow using ["shoutem" tag](http://stackoverflow.com/tags/shoutem).
+
 ## Examples
 
 Use [Shoutem UI](https://github.com/shoutem.theme), set of components which are made to be customizable by Theme, to see how to work with it.
