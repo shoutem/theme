@@ -179,6 +179,8 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
         const addedProps = {};
         if (options.withRef) {
           addedProps.ref = 'wrappedInstance';
+        } else if (WrappedComponent.prototype.render) {
+          addedProps.ref = this.setWrappedInstance;
         }
         return addedProps;
       }
@@ -225,7 +227,6 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
             {...this.props}
             {...addedProps}
             style={style}
-            ref={this.setWrappedInstance}
           />);
       }
     }
