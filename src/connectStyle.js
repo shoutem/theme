@@ -6,6 +6,8 @@ import normalizeStyle from './StyleNormalizer/normalizeStyle';
 import Theme, { ThemeShape } from './Theme';
 import { resolveComponentStyle } from './resolveComponentStyle';
 
+// TODO - remove withRef warning in next version
+
 /**
  * Formats and throws an error when connecting component style with the theme.
  *
@@ -40,7 +42,6 @@ function getTheme(context) {
  * @param mapPropsToStyleNames Pure function to customize styleNames depending on props.
  * @param options The additional connectStyle options
  * @param options.virtual The default value of the virtual prop
- * @param options.withRef Create component ref with addedProps; if true, ref name is wrappedInstance
  * @returns {StyledComponent} The new component that will handle
  * the styling of the wrapped component.
  */
@@ -106,6 +107,7 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
         const resolvedStyle = this.resolveStyle(context, props, styleNames);
         this.setWrappedInstance = this.setWrappedInstance.bind(this);
         this.transformProps = this.transformProps.bind(this);
+        this.isRefDefined = this.isRefDefined.bind(this);
         this.state = {
           style: resolvedStyle.componentStyle,
           childrenStyle: resolvedStyle.childrenStyle,
@@ -115,6 +117,8 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
           addedProps: this.resolveAddedProps(),
           styleNames,
         };
+
+        this.resolveAddedProps = this.resolveAddedProps.bind(this);
       }
 
       getChildContext() {
@@ -175,11 +179,21 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
         return _.uniq(mapPropsToStyleNames(styleNames, props));
       }
 
+      isRefDefined() {
+        // Ref key exists in the props when it's defined on the component
+        // instance, but it has undefined value and it is non-enumerable.
+        // When it's not passed it doesn't exist in the props.
+        // This is abuse of the specifc ref behaviour but it optimizes number of created refs.
+        const propKeys = Object.getOwnPropertyNames(this.props);
+        return _.indexOf(propKeys, 'ref') >= 0;
+      }
+
       resolveAddedProps() {
         const addedProps = {};
         if (options.withRef) {
-          addedProps.ref = 'wrappedInstance';
-        } else if (WrappedComponent.prototype.render) {
+          console.warn('withRef is deprecated');
+        }
+        if (this.isRefDefined) {
           addedProps.ref = this.setWrappedInstance;
         }
         return addedProps;
