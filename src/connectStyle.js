@@ -107,7 +107,6 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
         const resolvedStyle = this.resolveStyle(context, props, styleNames);
         this.setWrappedInstance = this.setWrappedInstance.bind(this);
         this.transformProps = this.transformProps.bind(this);
-        this.isRefDefined = this.isRefDefined.bind(this);
         this.state = {
           style: resolvedStyle.componentStyle,
           childrenStyle: resolvedStyle.childrenStyle,
@@ -117,8 +116,6 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
           addedProps: this.resolveAddedProps(),
           styleNames,
         };
-
-        this.resolveAddedProps = this.resolveAddedProps.bind(this);
       }
 
       getChildContext() {
@@ -182,7 +179,7 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
       isRefDefined() {
         // Ref key exists in the props when it's defined on the component
         // instance, but it has undefined value and it is non-enumerable.
-        // When it's not passed it doesn't exist in the props.
+        // When it's not defined it doesn't exist in the props.
         // This is abuse of the specifc ref behaviour but it optimizes number of created refs.
         const propKeys = Object.getOwnPropertyNames(this.props);
         return _.indexOf(propKeys, 'ref') >= 0;
@@ -193,7 +190,7 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
         if (options.withRef) {
           console.warn('withRef is deprecated');
         }
-        if (this.isRefDefined) {
+        if (this.isRefDefined()) {
           addedProps.ref = this.setWrappedInstance;
         }
         return addedProps;
