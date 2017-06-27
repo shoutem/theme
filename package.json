@@ -1,7 +1,7 @@
 {
   "name": "@shoutem/theme",
   "version": "0.9.0",
-  "main": "index.js",
+  "main": "lib/index.js",
   "description": "Style your components in one place.",
   "dependencies": {
     "hoist-non-react-statics": "^1.0.5",
@@ -14,17 +14,25 @@
   },
   "devDependencies": {
     "babel": "^6.3.26",
+    "babel-cli": "^6.24.1",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
     "babel-preset-react-native": "^1.9.0",
+    "babel-preset-stage-0": "^6.24.1",
     "chai": "^3.4.1",
     "deep-freeze": "0.0.1",
     "enzyme": "^2.0.0-rc1",
     "mocha": "^2.3.4",
     "react-addons-test-utils": "^15.3.1",
     "react-dom": "^15.3.1",
-    "react-native-mock": "^0.2.5"
+    "react-native-mock": "^0.2.5",
+    "rimraf": "^2.6.1"
   },
   "scripts": {
-    "test": "mocha -R spec --require test-utils/setup.js --require react-native-mock/mock.js --compilers js:babel-core/register $(find . -name '*.spec.js' ! -ipath '*node_modules*')"
+    "test": "mocha -R spec --require test-utils/setup.js --require react-native-mock/mock.js --compilers js:babel-core/register $(find . -name '*.spec.js' ! -ipath '*node_modules*')",
+    "compile": "rimraf lib/* && babel src -d lib",
+    "prepublish": "npm run compile"
   },
   "license": "BSD-3-Clause",
   "maintainers": [
@@ -61,5 +69,4 @@
       "name": "zrumenjak"
     }
   ]
-
 }
