@@ -66,7 +66,7 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
       );
     }
 
-    class StyledComponent extends React.Component {
+    class StyledComponent extends React.PureComponent {
       static contextTypes = {
         theme: ThemeShape,
         // The style inherited from the parent
@@ -106,12 +106,13 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
         const resolvedStyle = this.resolveStyle(context, props, styleNames);
         this.setWrappedInstance = this.setWrappedInstance.bind(this);
         this.transformProps = this.transformProps.bind(this);
+
         this.state = {
           style: resolvedStyle.componentStyle,
           childrenStyle: resolvedStyle.childrenStyle,
           // AddedProps are additional WrappedComponent props
-          // Usually they are set trough alternative ways,
-          // such as theme style, or trough options
+          // Usually they are set through alternative ways,
+          // such as theme style, or through options
           addedProps: this.resolveAddedProps(),
           styleNames,
         };
@@ -130,6 +131,7 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
         const styleNames = this.resolveStyleNames(nextProps);
         if (this.shouldRebuildStyle(nextProps, nextContext, styleNames)) {
           const resolvedStyle = this.resolveStyle(nextContext, nextProps, styleNames);
+
           this.setState({
             style: resolvedStyle.componentStyle,
             childrenStyle: resolvedStyle.childrenStyle,
