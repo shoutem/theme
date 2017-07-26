@@ -49,6 +49,13 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
     return WrappedComponent.displayName || WrappedComponent.name || 'Component';
   }
 
+  function getBaseComponent(WrappedComponent) {
+    if (WrappedComponent.BaseComponent) {
+      return WrappedComponent.BaseComponent;
+    }
+    return WrappedComponent;
+  }
+
   return function wrapWithStyledComponent(WrappedComponent) {
     const componentDisplayName = getComponentDisplayName(WrappedComponent);
 
@@ -99,6 +106,7 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
 
       static displayName = `Styled(${componentDisplayName})`;
       static WrappedComponent = WrappedComponent;
+      static BaseComponent = getBaseComponent(WrappedComponent);
 
       constructor(props, context) {
         super(props, context);
