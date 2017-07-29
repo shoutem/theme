@@ -143,6 +143,9 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
       }
 
       setNativeProps(nativeProps) {
+        if (!this.isRefDefined()) {
+          console.warn('setNativeProps can\'nt be used on stateless components');
+        }
         if (this.wrappedInstance.setNativeProps) {
           this.wrappedInstance.setNativeProps(nativeProps);
         }
@@ -180,12 +183,8 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
       }
 
       isRefDefined() {
-        // Ref key exists in the props when it's defined on the component
-        // instance, but it has undefined value and it is non-enumerable.
-        // When it's not passed it doesn't exist in the props.
-        // This is abuse of the specifc ref behaviour but it optimizes number of created refs.
-        const propKeys = Object.getOwnPropertyNames(this.props);
-        return _.indexOf(propKeys, 'ref') >= 0;
+        // Define refs on all stateful containers
+        return WrappedComponent.prototype.render;
       }
 
       resolveAddedProps() {
@@ -193,7 +192,7 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
         if (options.withRef) {
           console.warn('withRef is deprecated');
         }
-        if (this.isRefDefined) {
+        if (this.isRefDefined()) {
           addedProps.ref = this.setWrappedInstance;
         }
         return addedProps;
