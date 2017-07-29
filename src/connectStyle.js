@@ -142,6 +142,7 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
       setNativeProps(nativeProps) {
         if (!this.isRefDefined()) {
           console.warn('setNativeProps can\'nt be used on stateless components');
+          return;
         }
         if (this.wrappedInstance.setNativeProps) {
           this.wrappedInstance.setNativeProps(nativeProps);
