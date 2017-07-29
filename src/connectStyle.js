@@ -107,7 +107,6 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
         const resolvedStyle = this.resolveStyle(context, props, styleNames);
         this.setWrappedInstance = this.setWrappedInstance.bind(this);
         this.transformProps = this.transformProps.bind(this);
-        this.isRefDefined = this.isRefDefined.bind(this);
         this.state = {
           style: resolvedStyle.componentStyle,
           childrenStyle: resolvedStyle.childrenStyle,
@@ -117,8 +116,6 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
           addedProps: this.resolveAddedProps(),
           styleNames,
         };
-
-        this.resolveAddedProps = this.resolveAddedProps.bind(this);
       }
 
       getChildContext() {
