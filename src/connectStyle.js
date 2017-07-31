@@ -6,6 +6,8 @@ import normalizeStyle from './StyleNormalizer/normalizeStyle';
 import Theme, { ThemeShape } from './Theme';
 import { resolveComponentStyle } from './resolveComponentStyle';
 
+// TODO - remove withRef warning in next version
+
 /**
  * Formats and throws an error when connecting component style with the theme.
  *
@@ -40,7 +42,6 @@ function getTheme(context) {
  * @param mapPropsToStyleNames Pure function to customize styleNames depending on props.
  * @param options The additional connectStyle options
  * @param options.virtual The default value of the virtual prop
- * @param options.withRef Create component ref with addedProps; if true, ref name is wrappedInstance
  * @returns {StyledComponent} The new component that will handle
  * the styling of the wrapped component.
  */
@@ -149,6 +150,10 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
       }
 
       setNativeProps(nativeProps) {
+        if (!this.isRefDefined()) {
+          console.warn('setNativeProps can\'nt be used on stateless components');
+          return;
+        }
         if (this.wrappedInstance.setNativeProps) {
           this.wrappedInstance.setNativeProps(nativeProps);
         }
@@ -185,10 +190,18 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
         return _.uniq(mapPropsToStyleNames(styleNames, props));
       }
 
+      isRefDefined() {
+        // Define refs on all stateful containers
+        return WrappedComponent.prototype.render;
+      }
+
       resolveAddedProps() {
         const addedProps = {};
         if (options.withRef) {
-          addedProps.ref = 'wrappedInstance';
+          console.warn('withRef is deprecated');
+        }
+        if (this.isRefDefined()) {
+          addedProps.ref = this.setWrappedInstance;
         }
         return addedProps;
       }
@@ -235,7 +248,6 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
             {...this.props}
             {...addedProps}
             style={style}
-            ref={this.setWrappedInstance}
           />);
       }
     }
