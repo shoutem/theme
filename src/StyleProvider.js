@@ -1,6 +1,5 @@
 import React, { Children, PropTypes } from 'react';
 import Theme, { ThemeShape } from './Theme';
-import normalizeStyle from './StyleNormalizer/normalizeStyle';
 
 /**
  *  Provides a theme to child components trough context.

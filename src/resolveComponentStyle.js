@@ -1,5 +1,8 @@
 import _ from 'lodash';
 
+const styleVariantRegex = new RegExp('^\\.');
+const childStyleRegex = new RegExp('(^[^\\.].*\\.)|^\\*$');
+
 /**
  * Matches any style properties that represent component style variants.
  * Those styles can be applied to the component by using the styleName
@@ -10,7 +13,7 @@ import _ from 'lodash';
  * @returns {boolean} True if the style property represents a component variant, false otherwise.
  */
 function isStyleVariant(propertyName) {
-  return /^\./.test(propertyName);
+  return styleVariantRegex.test(propertyName);
 }
 
 /**
@@ -26,7 +29,7 @@ function isStyleVariant(propertyName) {
  * @returns {boolean} True if the style property represents a child style, false otherwise.
  */
 function isChildStyle(propertyName) {
-  return /(^[^\.].*\.)|^\*$/.test(propertyName);
+  return childStyleRegex.test(propertyName);
 }
 
 /**
@@ -72,7 +75,7 @@ function splitStyle(style) {
  * 5. Element style passed through the style prop
  *
  * @param componentName The component name ('shoutem.ui.Text')
- * @param styleName Style names ('large rounded')
+ * @param styleNames Style names ('large rounded')
  * @param themeStyle The theme style that should include the theme and base component style
  * @param parentStyle The style rules inherited from the parent component
  * @param elementStyle The style passed through the style prop of the component
