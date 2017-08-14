@@ -2,12 +2,13 @@ import React, {
   Component,
   Text,
 } from 'react-native';
+import PropTypes from 'prop-types';
 
 import { connectStyle } from '../../';
 
 class ConnectStyleTestClassComponent extends Component {
   static propTypes = {
-    style: React.PropTypes.object,
+    style: PropTypes.object,
   };
   constructor(props, context) {
     super(props, context);

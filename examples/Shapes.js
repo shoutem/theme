@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import connectStyle from '../src/connectStyle';
 import StyleProvider from '../src/StyleProvider';
 import { INCLUDE } from '../src/resolveIncludes';
@@ -52,8 +53,8 @@ const theme = (variables = {}) => ({
 
 export  default class Shapes extends React.Component {
   static propTypes = {
-    themeVariables: React.PropTypes.object,
-    screenStyle: React.PropTypes.object,
+    themeVariables: PropTypes.object,
+    screenStyle: PropTypes.object,
   };
 
   static defaultProps = {
@@ -119,7 +120,7 @@ function Screen({ style }) {
 }
 
 Screen.propTypes = {
-  style: React.PropTypes.object,
+  style: PropTypes.object,
 };
 
 // Component style name - developer.project.screen
