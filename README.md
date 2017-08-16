@@ -19,7 +19,7 @@ Join [our community](https://www.facebook.com/groups/shoutem.community/) on Face
 
 ## Examples
 
-Use [Shoutem UI](https://github.com/shoutem.theme), set of components which are made to be customizable by Theme, to see how to work with it.
+Use [Shoutem UI](https://github.com/shoutem/theme), set of components which are made to be customizable by Theme, to see how to work with it.
 
 Create new React Native project:
 
