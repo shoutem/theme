@@ -1,5 +1,5 @@
 # Theme
- 
+
 The React Native component's style is usually defined as a static variable along with the component itself. This makes it easy to build self contained components that always look and behave in the same way. On the other hand, it complicates building themeable (or skinnable) components that could have multiple styles that can be customized without touching the component source code.
 `@shoutem/theme` is built to address that problem. With themes, you can target specific components in your app and customize them through one file, just like you would do it with CSS on the web.
 
@@ -36,11 +36,11 @@ $ npm install --save @shoutem/theme
 $ rnpm link
 ```
 
-Now, simply copy the following to your `index.ios.js` file of React Native project:
+Now, simply copy the following to the `App.js` file of your React Native project:
 
 ```JavaScript
 import React, { Component } from 'react';
-import { AppRegistry, Dimensions } from 'react-native';
+import { Dimensions } from 'react-native';
 import { StyleProvider } from '@shoutem/theme';
 import {
   Card,
@@ -107,12 +107,11 @@ const theme = {
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    resizeMode: 'cover',
     backgroundColor: Colors.BACKGROUND,
   },
 };
 
-class HelloWorld extends Component {
+export default class App extends Component<{}> {
   render() {
     return (
       <StyleProvider style={theme}>
@@ -134,8 +133,6 @@ class HelloWorld extends Component {
     );
   }
 }
-
-AppRegistry.registerComponent('HelloWorld', () => HelloWorld);
 ```
 
 Finally, run the app!
@@ -151,7 +148,7 @@ Shoutem UI is a part of the Shoutem UI Toolkit that enables you to build profess
 It consists of three libraries:
 
 - [@shoutem/ui](https://github.com/shoutem/ui): beautiful and customizable UI components
-- [@shoutem/theme](https://github.com/shoutem/theme): “CSS-way" of styling entire app 
+- [@shoutem/theme](https://github.com/shoutem/theme): “CSS-way" of styling entire app
 - [@shoutem/animation](https://github.com/shoutem/animation): declarative way of applying ready-made  animations
 
 
