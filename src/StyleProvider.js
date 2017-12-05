@@ -1,4 +1,5 @@
-import React, { Children, PropTypes } from 'react';
+import React, { Children } from 'react';
+import PropTypes from 'prop-types';
 import Theme, { ThemeShape } from './Theme';
 
 /**
@@ -7,7 +8,7 @@ import Theme, { ThemeShape } from './Theme';
 export default class StyleProvider extends React.Component {
   static propTypes = {
     children: PropTypes.element.isRequired,
-    style: React.PropTypes.object,
+    style: PropTypes.object,
   };
 
   static defaultProps = {

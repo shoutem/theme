@@ -1,4 +1,4 @@
-import { PropTypes } from 'react';
+import PropTypes from 'prop-types';
 import resolveIncludes from './resolveIncludes';
 import mergeComponentAndThemeStyles from './mergeComponentAndThemeStyles';
 import normalizeStyle from './StyleNormalizer/normalizeStyle';
