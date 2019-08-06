@@ -15,17 +15,19 @@
   },
   "devDependencies": {
     "babel": "^6.3.26",
+    "babel-core": "^6.26.3",
     "babel-preset-react-native": "^1.9.0",
     "chai": "^3.4.1",
     "deep-freeze": "0.0.1",
     "enzyme": "^2.0.0-rc1",
-    "mocha": "^2.3.4",
+    "jsdom": "^15.1.1",
+    "mocha": "^6.2.0",
     "react-addons-test-utils": "^15.3.1",
     "react-dom": "^15.3.1",
     "react-native-mock": "^0.2.5"
   },
   "scripts": {
-    "test": "mocha -R spec --require test-utils/setup.js --require react-native-mock/mock.js --compilers js:babel-core/register $(find . -name '*.spec.js' ! -ipath '*node_modules*')"
+    "test": "mocha -R spec --require test-utils/setup.js --require react-native-mock/mock.js --require babel-core/register $(find . -name '*.spec.js' ! -ipath '*node_modules*')"
   },
   "license": "BSD-3-Clause",
   "maintainers": [
