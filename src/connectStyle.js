@@ -137,7 +137,7 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
         };
       }
 
-      componentWillReceiveProps(nextProps, nextContext) {
+      UNSAFE_componentWillReceiveProps(nextProps, nextContext) {
         const styleNames = this.resolveStyleNames(nextProps);
         if (this.shouldRebuildStyle(nextProps, nextContext, styleNames)) {
           const resolvedStyle = this.resolveStyle(nextContext, nextProps, styleNames);
