@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import hoistStatics from 'hoist-non-react-statics';
-import * as _ from 'lodash';
-import normalizeStyle from './StyleNormalizer/normalizeStyle';
+import _ from 'lodash';
 
-import Theme, { ThemeShape } from './Theme';
+import normalizeStyle from './StyleNormalizer/normalizeStyle';
 import { resolveComponentStyle } from './resolveComponentStyle';
+import Theme, { ThemeShape } from './Theme';
 
 // TODO - remove withRef warning in next version
 
@@ -46,7 +46,12 @@ function getTheme(context) {
  * @returns {StyledComponent} The new component that will handle
  * the styling of the wrapped component.
  */
-export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, options = {}) => {
+export default function connectStyle(
+  componentStyleName,
+  componentStyle = {},
+  mapPropsToStyleNames,
+  options = {}
+) {
   function getComponentDisplayName(WrappedComponent) {
     return WrappedComponent.displayName || WrappedComponent.name || 'Component';
   }
@@ -75,7 +80,7 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
       );
     }
 
-    class StyledComponent extends React.PureComponent {
+    class StyledComponent extends PureComponent {
       static contextTypes = {
         theme: ThemeShape,
         // The style inherited from the parent
@@ -112,8 +117,10 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
 
       constructor(props, context) {
         super(props, context);
+
         const styleNames = this.resolveStyleNames(props);
         const resolvedStyle = this.resolveStyle(context, props, styleNames);
+
         this.setWrappedInstance = this.setWrappedInstance.bind(this);
         this.transformProps = this.transformProps.bind(this);
 
@@ -137,10 +144,11 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
         };
       }
 
-      componentWillReceiveProps(nextProps, nextContext) {
-        const styleNames = this.resolveStyleNames(nextProps);
-        if (this.shouldRebuildStyle(nextProps, nextContext, styleNames)) {
-          const resolvedStyle = this.resolveStyle(nextContext, nextProps, styleNames);
+      componentDidUpdate(prevProps) {
+        const styleNames = this.resolveStyleNames(this.props);
+
+        if (this.shouldRebuildStyle(prevProps, styleNames)) {
+          const resolvedStyle = this.resolveStyle(this.context, this.props, styleNames);
 
           this.setState({
             style: resolvedStyle.componentStyle,
@@ -152,7 +160,7 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
 
       setNativeProps(nativeProps) {
         if (!this.isRefDefined()) {
-          console.warn('setNativeProps can\'nt be used on stateless components');
+          console.warn('setNativeProps can\'t be used on stateless components');
           return;
         }
         if (this.wrappedInstance.setNativeProps) {
@@ -164,19 +172,17 @@ export default (componentStyleName, componentStyle = {}, mapPropsToStyleNames, o
         this.wrappedInstance = component;
       }
 
-      hasStyleNameChanged(nextProps, styleNames) {
-        return mapPropsToStyleNames && this.props !== nextProps &&
-          // Even though props did change here,
-          // it doesn't necessary means changed props are those which affect styleName
+      hasStyleNameChanged(prevProps, styleNames) {
+        return mapPropsToStyleNames && this.props !== prevProps &&
+          // Even though props did change here, it doesn't necessarily mean
+          // props that affect styleName have changed
           !_.isEqual(this.state.styleNames, styleNames);
       }
 
-      shouldRebuildStyle(nextProps, nextContext, styleNames) {
-        return (nextProps.style !== this.props.style) ||
-          (nextProps.styleName !== this.props.styleName) ||
-          (nextContext.theme !== this.context.theme) ||
-          (nextContext.parentStyle !== this.context.parentStyle) ||
-          (this.hasStyleNameChanged(nextProps, styleNames));
+      shouldRebuildStyle(prevProps, styleNames) {
+        return (prevProps.style !== this.props.style) ||
+          (prevProps.styleName !== this.props.styleName) ||
+          (this.hasStyleNameChanged(prevProps, styleNames));
       }
 
       resolveStyleNames(props) {
