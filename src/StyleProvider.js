@@ -1,11 +1,11 @@
-import React, { Children } from 'react';
+import React, { PureComponent, Children } from 'react';
 import PropTypes from 'prop-types';
 import Theme, { ThemeShape } from './Theme';
 
 /**
  *  Provides a theme to child components trough context.
  */
-export default class StyleProvider extends React.Component {
+export default class StyleProvider extends PureComponent {
   static propTypes = {
     children: PropTypes.element.isRequired,
     style: PropTypes.object,
@@ -19,10 +19,18 @@ export default class StyleProvider extends React.Component {
     theme: ThemeShape.isRequired,
   };
 
+  static getDerivedStateFromProps(props, state) {
+    return props.style === state.style ? state : {
+      style: props.style,
+      theme: new Theme(props.style),
+    };
+  }
+
   constructor(props, context) {
     super(props, context);
+
     this.state = {
-      theme: this.createTheme(props),
+      theme: new Theme(props.style),
     };
   }
 
@@ -30,18 +38,6 @@ export default class StyleProvider extends React.Component {
     return {
       theme: this.state.theme,
     };
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.style !== this.props.style) {
-      this.setState({
-        theme: this.createTheme(nextProps),
-      });
-    }
-  }
-
-  createTheme(props) {
-    return new Theme(props.style);
   }
 
   render() {
