@@ -96,7 +96,10 @@ export default function connectStyle(
 
       static propTypes = {
         // Element style that overrides any other style of the component
-        style: PropTypes.object,
+        style: PropTypes.oneOfType([
+          PropTypes.object,
+          PropTypes.array,
+        ]),
         // The style variant names to apply to this component,
         // multiple variants may be separated with a space character
         styleName: PropTypes.string,

@@ -9,11 +9,11 @@ const styleNormalizer = new StyleNormalizer();
  * @param style
  * @returns {*}
  */
-export default function normalizeStyle(style) {
+function normalize(style) {
   return _.reduce(style, (normalizedStyle, val, prop) => {
     /* eslint-disable no-param-reassign */
     if (_.isPlainObject(val)) {
-      normalizedStyle[prop] = normalizeStyle(val);
+      normalizedStyle[prop] = normalize(val);
     } else if (styleNormalizer.canNormalize(prop)) {
       normalizedStyle = {
         ...normalizedStyle,
@@ -26,4 +26,15 @@ export default function normalizeStyle(style) {
 
     return normalizedStyle;
   }, {});
+}
+
+export default function normalizeStyle(style) {
+  if (_.isArray(style)) {
+    return _.reduce(style, (normalizedStyle, val) => ({
+      ...normalizedStyle,
+      ...normalize(val),
+    }), {});
+  }
+
+  return normalize(style);
 }
