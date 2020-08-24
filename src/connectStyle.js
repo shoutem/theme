@@ -173,7 +173,7 @@ export default function connectStyle(
           // Usually they are set through alternative ways,
           // such as theme style, or through options
           addedProps: this.resolveAddedProps(),
-          styleNames,
+          styleNames, // eslint-disable-line
         };
       }
 
