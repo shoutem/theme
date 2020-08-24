@@ -1,8 +1,8 @@
-import React, { Component, Text } from 'react-native';
+import React, { PureComponent } from 'react';
+import { Text } from 'react-native';
+import { ThemeShape } from '../../src/Theme';
 
-import { ThemeShape } from '../../';
-
-export default class StyleProviderTestComponent extends Component {
+export default class StyleProviderTestComponent extends PureComponent {
   static contextTypes = {
     theme: ThemeShape,
   };

@@ -1,4 +1,4 @@
-import React, { PureComponent, Children } from 'react';
+import React, { PureComponent, Children } from 'react'; // eslint-disable-line
 import PropTypes from 'prop-types';
 import Theme, { ThemeShape } from './Theme';
 
@@ -35,9 +35,9 @@ export default class StyleProvider extends PureComponent {
   }
 
   getChildContext() {
-    return {
-      theme: this.state.theme,
-    };
+    const { theme } = this.state;
+
+    return { theme };
   }
 
   render() {

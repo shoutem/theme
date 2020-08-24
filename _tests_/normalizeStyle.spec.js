@@ -1,4 +1,3 @@
-import { assert } from 'chai';
 import ShorthandsNormalizerFactory, {
   CORNERS,
   SIDES,
@@ -12,8 +11,7 @@ import ShorthandsNormalizerFactory, {
 const TEST_VAL = 5;
 describe('normalizeStyle', () => {
   it('normalize all sides', () => {
-    const normalizePropVal =
-      ShorthandsNormalizerFactory.createNormalizer('padding', SIDES);
+    const normalizePropVal = ShorthandsNormalizerFactory.createNormalizer('padding', SIDES);
     const expectedStyle = {
       paddingTop: TEST_VAL,
       paddingLeft: TEST_VAL,
@@ -23,15 +21,14 @@ describe('normalizeStyle', () => {
 
     const normalizedStyle = normalizePropVal(TEST_VAL);
 
-    assert.deepEqual(
-      normalizedStyle,
-      expectedStyle,
-      'style not normalized correctly'
-    );
+    expect(normalizedStyle).toEqual(expectedStyle);
   });
   it('normalize all sides with suffix', () => {
-    const normalizePropVal =
-      ShorthandsNormalizerFactory.createNormalizer('padding', SIDES, 'Suffix');
+    const normalizePropVal = ShorthandsNormalizerFactory.createNormalizer(
+      'padding',
+      SIDES,
+      'Suffix',
+    );
     const expectedStyle = {
       paddingTopSuffix: TEST_VAL,
       paddingLeftSuffix: TEST_VAL,
@@ -41,11 +38,7 @@ describe('normalizeStyle', () => {
 
     const normalizedStyle = normalizePropVal(TEST_VAL);
 
-    assert.deepEqual(
-      normalizedStyle,
-      expectedStyle,
-      'style not normalized correctly'
-    );
+    expect(normalizedStyle).toEqual(expectedStyle);
   });
   it('normalize all corners', () => {
     const normalizePropVal = ShorthandsNormalizerFactory.createNormalizer('border', CORNERS);
@@ -58,15 +51,14 @@ describe('normalizeStyle', () => {
 
     const normalizedStyle = normalizePropVal(TEST_VAL);
 
-    assert.deepEqual(
-      normalizedStyle,
-      expectedStyle,
-      'style not normalized correctly'
-    );
+    expect(normalizedStyle).toEqual(expectedStyle);
   });
   it('normalize all corners with suffix', () => {
-    const normalizePropVal =
-      ShorthandsNormalizerFactory.createNormalizer('border', CORNERS, 'Radius');
+    const normalizePropVal = ShorthandsNormalizerFactory.createNormalizer(
+      'border',
+      CORNERS,
+      'Radius',
+    );
     const expectedStyle = {
       borderBottomLeftRadius: TEST_VAL,
       borderBottomRightRadius: TEST_VAL,
@@ -76,11 +68,7 @@ describe('normalizeStyle', () => {
 
     const normalizedStyle = normalizePropVal(TEST_VAL);
 
-    assert.deepEqual(
-      normalizedStyle,
-      expectedStyle,
-      'style not normalized correctly'
-    );
+    expect(normalizedStyle).toEqual(expectedStyle);
   });
   it('normalize horizontal', () => {
     const normalizePropVal = ShorthandsNormalizerFactory.createNormalizer('margin', HORIZONTAL);
@@ -91,11 +79,7 @@ describe('normalizeStyle', () => {
 
     const normalizedStyle = normalizePropVal(TEST_VAL);
 
-    assert.deepEqual(
-      normalizedStyle,
-      expectedStyle,
-      'style not normalized correctly'
-    );
+    expect(normalizedStyle).toEqual(expectedStyle);
   });
   it('normalize vertical', () => {
     const normalizePropVal = ShorthandsNormalizerFactory.createNormalizer('margin', VERTICAL);
@@ -106,10 +90,6 @@ describe('normalizeStyle', () => {
 
     const normalizedStyle = normalizePropVal(TEST_VAL);
 
-    assert.deepEqual(
-      normalizedStyle,
-      expectedStyle,
-      'style not normalized correctly'
-    );
+    expect(normalizedStyle).toEqual(expectedStyle);
   });
 });

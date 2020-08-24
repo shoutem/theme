@@ -21,46 +21,46 @@ export const BOTTOM_LEFT = 'BottomLeft';
 // When style property has any of this shorthands, use this creators
 // to create shorthand normalizer.
 
+function createAllSidesNormalizer(prop, shorthand, suffix = '') {
+  return val => ({
+    [prop + LEFT + suffix]: val,
+    [prop + RIGHT + suffix]: val,
+    [prop + TOP + suffix]: val,
+    [prop + BOTTOM + suffix]: val,
+  });
+}
+
+function createAllCornersNormalizer(prop, shorthand, suffix = '') {
+  return val => ({
+    [prop + BOTTOM_LEFT + suffix]: val,
+    [prop + BOTTOM_RIGHT + suffix]: val,
+    [prop + TOP_LEFT + suffix]: val,
+    [prop + TOP_RIGHT + suffix]: val,
+  });
+}
+
+function createHorizontalSidesNormalizer(prop) {
+  return val => ({
+    [prop + LEFT]: val,
+    [prop + RIGHT]: val,
+  });
+}
+
+function createVerticalSidesNormalizer(prop) {
+  return val => ({
+    [prop + TOP]: val,
+    [prop + BOTTOM]: val,
+  });
+}
+
 class ShorthandsNormalizerFactory {
   constructor() {
     this.createNormalizersMap = {
-      [SIDES.name]: this.createAllSidesNormalizer,
-      [CORNERS.name]: this.createAllCornersNormalizer,
-      [HORIZONTAL.name]: this.createHorizontalSidesNormalizer,
-      [VERTICAL.name]: this.createVerticalSidesNormalizer,
+      [SIDES.name]: createAllSidesNormalizer,
+      [CORNERS.name]: createAllCornersNormalizer,
+      [HORIZONTAL.name]: createHorizontalSidesNormalizer,
+      [VERTICAL.name]: createVerticalSidesNormalizer,
     };
-  }
-
-  createAllSidesNormalizer(prop, shorthand, suffix = '') {
-    return (val) => ({
-      [prop + LEFT + suffix]: val,
-      [prop + RIGHT + suffix]: val,
-      [prop + TOP + suffix]: val,
-      [prop + BOTTOM + suffix]: val,
-    });
-  }
-
-  createAllCornersNormalizer(prop, shorthand, suffix = '') {
-    return (val) => ({
-      [prop + BOTTOM_LEFT + suffix]: val,
-      [prop + BOTTOM_RIGHT + suffix]: val,
-      [prop + TOP_LEFT + suffix]: val,
-      [prop + TOP_RIGHT + suffix]: val,
-    });
-  }
-
-  createHorizontalSidesNormalizer(prop) {
-    return (val) => ({
-      [prop + LEFT]: val,
-      [prop + RIGHT]: val,
-    });
-  }
-
-  createVerticalSidesNormalizer(prop) {
-    return (val) => ({
-      [prop + TOP]: val,
-      [prop + BOTTOM]: val,
-    });
   }
 
   getNormalizerCreator(shorthand) {
@@ -69,6 +69,7 @@ class ShorthandsNormalizerFactory {
 
   createNormalizer(prop, shorthand, suffix) {
     const normalizerCreator = this.getNormalizerCreator(shorthand);
+
     return normalizerCreator(prop, shorthand, suffix);
   }
 }

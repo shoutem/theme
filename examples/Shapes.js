@@ -1,9 +1,10 @@
 import React from 'react';
+import { View, Text } from 'react-native';
 import PropTypes from 'prop-types';
+
 import connectStyle from '../src/connectStyle';
 import StyleProvider from '../src/StyleProvider';
 import { INCLUDE } from '../src/resolveIncludes';
-import { View, Text } from 'react-native';
 
 const theme = (variables = {}) => ({
   circle: {
@@ -51,7 +52,11 @@ const theme = (variables = {}) => ({
   },
 });
 
-export  default class Shapes extends React.Component {
+function resolveTheme(themeVariables) {
+  return theme(themeVariables);
+}
+
+export default class Shapes extends React.Component {
   static propTypes = {
     themeVariables: PropTypes.object,
     screenStyle: PropTypes.object,
@@ -64,6 +69,7 @@ export  default class Shapes extends React.Component {
 
   constructor(props, context) {
     super(props, context);
+
     this.updateThemeVariable = this.updateThemeVariable.bind(this);
 
     const themeVariables = {
@@ -80,29 +86,31 @@ export  default class Shapes extends React.Component {
   }
 
   updateThemeVariable(key, val) {
-    const themeVariables = { ...this.state.themeVariables, [key]: val };
-    this.setState({ themeVariables });
-  }
+    const { themeVariables } = this.state;
 
-  resolveTheme(themeVariables) {
-    return theme(themeVariables);
+    const newThemeVariables = { ...themeVariables, [key]: val };
+    this.setState({ themeVariables: newThemeVariables });
   }
 
   render() {
+    const { screenStyle } = this.props;
     const { themeVariables } = this.state;
+
     return (
-      <StyleProvider style={this.resolveTheme(themeVariables)}>
-        <StyledScreen style={this.props.screenStyle} />
+      <StyleProvider style={resolveTheme(themeVariables)}>
+        <StyledScreen style={screenStyle} />
       </StyleProvider>
     );
   }
 }
 
 function Screen({ style }) {
+  const { container, title } = style;
+
   // connectStyle creates HOC which pass theme style to component by it style name automatically
   return (
-    <StyledView style={style.container} virtual>
-      <Text style={style.title}>Theme Screen</Text>
+    <StyledView style={container} virtual>
+      <Text style={title}>Theme Screen</Text>
 
       <StyledView styleName="square">
         {/* Circle styleName is not applied because it is not nested properly in theme */}
@@ -121,6 +129,10 @@ function Screen({ style }) {
 
 Screen.propTypes = {
   style: PropTypes.object,
+};
+
+Screen.defaultProps = {
+  style: {},
 };
 
 // Component style name - developer.project.screen

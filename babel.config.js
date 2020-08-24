@@ -5,7 +5,7 @@ module.exports = function babelConfig(api) {
     'module:metro-react-native-babel-preset',
   ];
   const plugins = [
-    ["@babel/plugin-proposal-class-properties", { loose: true }],
+    ['@babel/plugin-proposal-class-properties', { loose: true }],
   ];
 
   return {

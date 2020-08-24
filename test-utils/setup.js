@@ -1,18 +1,25 @@
-const jsdom = require('jsdom');
+import 'react-native';
+import 'jest-enzyme';
+import Enzyme from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
 
-const { JSDOM } = jsdom;
-const exposedProperties = ['window', 'navigator', 'document'];
+const { JSDOM } = require('jsdom');
 
-global.document = new JSDOM('');
-Object.keys(global.document).forEach((property) => {
-  if (typeof global[property] === 'undefined') {
-    exposedProperties.push(property);
-    global[property] = document.defaultView[property];
-  }
-});
+const jsdom = new JSDOM('<!doctype html><html><body></body></html>', { url: 'https://localhost' });
+const { window } = jsdom;
 
+function copyProps(src, target) {
+  Object.defineProperties(target, {
+    ...Object.getOwnPropertyDescriptors(src),
+    ...Object.getOwnPropertyDescriptors(target),
+  });
+}
+
+global.window = window;
+global.document = window.document;
 global.navigator = {
   userAgent: 'node.js',
 };
+copyProps(window, global);
 
-documentRef = document;
+Enzyme.configure({ adapter: new Adapter() });

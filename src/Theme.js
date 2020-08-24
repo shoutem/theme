@@ -86,7 +86,7 @@ export default class Theme {
     this[THEME_STYLE_CACHE][componentName] = mergeComponentAndThemeStyles(
       componentIncludedStyle,
       this[THEME_STYLE][componentName],
-      this[THEME_STYLE]
+      this[THEME_STYLE],
     );
 
     return this[THEME_STYLE_CACHE][componentName];

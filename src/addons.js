@@ -1,8 +1,5 @@
 import tinyColor from 'tinycolor2';
-import { Dimensions } from 'react-native';
 import _ from 'lodash';
-
-const window = Dimensions.get('window');
 
 function capitalizeFirstLetter(value) {
   return value.charAt(0).toUpperCase() + value.slice(1);

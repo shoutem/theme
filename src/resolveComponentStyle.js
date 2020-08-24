@@ -81,39 +81,41 @@ function splitStyle(style) {
  * @param elementStyle The style passed through the style prop of the component
  * @returns {{componentStyle, childrenStyle}} The resolved component and children styles.
  */
-export function resolveComponentStyle(
+export default function resolveComponentStyle(
   componentName,
   styleNames = [],
   themeStyle = {},
   parentStyle = {},
-  elementStyle = {}
+  elementStyle = {},
 ) {
   // Phase 1: merge the styles in the correct order to resolve the variant styles,
   // the component style will be merged as well in this step, but the component
   // style merge results are ignored after this step. We need to perform this
   // step separately because the style variants may be overridden by any style, so
   // the purpose of this phase is to determine the final state of the variant styles.
-  const mergedStyle = _.merge({},
+  const mergedStyle = _.merge(
+    {},
     themeStyle,
     parentStyle['*'],
     parentStyle[componentName],
-    ..._.map(styleNames, (sn) => themeStyle[`.${sn}`]),
-    ..._.map(styleNames, (sn) => parentStyle[`*.${sn}`]),
-    ..._.map(styleNames, (sn) => parentStyle[`${componentName}.${sn}`]),
-    elementStyle
+    ..._.map(styleNames, sn => themeStyle[`.${sn}`]),
+    ..._.map(styleNames, sn => parentStyle[`*.${sn}`]),
+    ..._.map(styleNames, sn => parentStyle[`${componentName}.${sn}`]),
+    elementStyle,
   );
 
   // Phase 2: merge the component styles, this step is performed by using the
   // style from phase 1, so that we are sure that the final style variants are
   // applied to component style.
-  const resolvedStyle = _.merge({},
+  const resolvedStyle = _.merge(
+    {},
     mergedStyle,
     parentStyle['*'],
     parentStyle[componentName],
-    ..._.map(styleNames, (sn) => mergedStyle[`.${sn}`]),
-    ..._.map(styleNames, (sn) => parentStyle[`*.${sn}`]),
-    ..._.map(styleNames, (sn) => parentStyle[`${componentName}.${sn}`]),
-    elementStyle
+    ..._.map(styleNames, sn => mergedStyle[`.${sn}`]),
+    ..._.map(styleNames, sn => parentStyle[`*.${sn}`]),
+    ..._.map(styleNames, sn => parentStyle[`${componentName}.${sn}`]),
+    elementStyle,
   );
 
   const { componentStyle, childrenStyle } = splitStyle(resolvedStyle);
