@@ -141,6 +141,18 @@ Finally, run the app!
 $ react-native run-ios
 ```
 
+## Automated Testing
+
+Jest has been set up to provide the ability to test `@shoutem/theme` after any changes.
+
+To run tests, first add the following to `dependencies` in `package.json`:
+- `"react-native": "0.63.2"`
+- `"react": "16.13.1"`
+- `"react-dom": "16.13.1"`
+
+Or whichever version is relevant after your changes. Then run `npm run test` and see if you broke anything.
+
+
 ## UI Toolkit
 
 Shoutem UI is a part of the Shoutem UI Toolkit that enables you to build professionally looking React Native apps with ease.  
