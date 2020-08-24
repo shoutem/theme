@@ -150,7 +150,7 @@ To run tests, first add the following to `dependencies` in `package.json`:
 - `"react": "16.13.1"`
 - `"react-dom": "16.13.1"`
 
-Or whichever version is relevant after your changes. Then run `npm run test` and see if you broke anything.
+Or whichever version is relevant after your changes. Then run `npm i && npm run test` and see if you broke anything.
 
 
 ## UI Toolkit
