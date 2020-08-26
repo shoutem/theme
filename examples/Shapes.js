@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import PropTypes from 'prop-types';
+import autoBind from 'auto-bind/react';
 
 import connectStyle from '../src/connectStyle';
 import StyleProvider from '../src/StyleProvider';
@@ -70,7 +71,7 @@ export default class Shapes extends React.Component {
   constructor(props, context) {
     super(props, context);
 
-    this.updateThemeVariable = this.updateThemeVariable.bind(this);
+    autoBind(this);
 
     const themeVariables = {
       color: 'navy',
