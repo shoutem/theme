@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import { Text } from 'react-native';
 import PropTypes from 'prop-types';
-import autoBind from 'auto-bind';
-
+import { Text } from 'react-native';
 import { ThemeShape } from '../../src/Theme';
 import connectStyle from '../../src/connectStyle';
 

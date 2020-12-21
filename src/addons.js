@@ -37,17 +37,21 @@ function capitalizeFirstLetter(value) {
  * @returns {object} An object with the generated style variants.
  */
 export function createVariations(baseName, nameSuffixes, key, value) {
-  return _.reduce(nameSuffixes, (result, variant) => {
-    const variantName = variant ? `${baseName}-${variant}` : baseName;
-    const keyName = variant ? `${key}${capitalizeFirstLetter(variant)}` : key;
+  return _.reduce(
+    nameSuffixes,
+    (result, variant) => {
+      const variantName = variant ? `${baseName}-${variant}` : baseName;
+      const keyName = variant ? `${key}${capitalizeFirstLetter(variant)}` : key;
 
-    // eslint-disable-next-line no-param-reassign
-    result[variantName] = {
-      [keyName]: value,
-    };
+      // eslint-disable-next-line no-param-reassign
+      result[variantName] = {
+        [keyName]: value,
+      };
 
-    return result;
-  }, {});
+      return result;
+    },
+    {},
+  );
 }
 
 /**
@@ -81,16 +85,24 @@ export function createVariations(baseName, nameSuffixes, key, value) {
  * @param customStyles Style overrides by component names.
  * @returns {object} An object with the generated styles.
  */
-export function createSharedStyle(componentNames, sharedStyle = {}, customStyles = {}) {
-  return _.reduce(componentNames, (result, componentName) => {
-    // eslint-disable-next-line no-param-reassign
-    result[componentName] = {
-      ...sharedStyle,
-      ...customStyles[componentName],
-    };
+export function createSharedStyle(
+  componentNames,
+  sharedStyle = {},
+  customStyles = {},
+) {
+  return _.reduce(
+    componentNames,
+    (result, componentName) => {
+      // eslint-disable-next-line no-param-reassign
+      result[componentName] = {
+        ...sharedStyle,
+        ...customStyles[componentName],
+      };
 
-    return result;
-  }, {});
+      return result;
+    },
+    {},
+  );
 }
 
 /**
@@ -100,7 +112,9 @@ export function createSharedStyle(componentNames, sharedStyle = {}, customStyles
  * @returns {*}
  */
 export function changeColorAlpha(color, newAlpha) {
-  return tinyColor(color).setAlpha(newAlpha).toRgbString();
+  return tinyColor(color)
+    .setAlpha(newAlpha)
+    .toRgbString();
 }
 
 /**
@@ -126,6 +140,10 @@ export function inverseColorBrightnessForAmount(colorValue, amount) {
  * @param actualRefVal - actual reference value
  * @returns {number}
  */
-export function getSizeRelativeToReference(dimension, originalRefVal, actualRefVal) {
+export function getSizeRelativeToReference(
+  dimension,
+  originalRefVal,
+  actualRefVal,
+) {
   return (dimension / originalRefVal) * actualRefVal;
 }

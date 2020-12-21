@@ -1,6 +1,9 @@
 import _ from 'lodash';
 
-const createShorthand = (name, type) => ({ name, type: _.isUndefined(type) ? name : type });
+const createShorthand = (name, type) => ({
+  name,
+  type: _.isUndefined(type) ? name : type,
+});
 
 export const SIDES = createShorthand('Sides', '');
 export const CORNERS = createShorthand('Corners', '');

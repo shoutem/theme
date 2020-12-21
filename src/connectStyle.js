@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import autoBind from 'auto-bind/react';
+import autoBindReact from 'auto-bind/react';
 import hoistStatics from 'hoist-non-react-statics';
 import _ from 'lodash';
-
+import PropTypes from 'prop-types';
 import normalizeStyle from './StyleNormalizer/normalizeStyle';
 import resolveComponentStyle from './resolveComponentStyle';
 import Theme, { ThemeShape } from './Theme';
@@ -17,7 +16,9 @@ import Theme, { ThemeShape } from './Theme';
  * @param componentDisplayName The name of the component that is being connected.
  */
 function throwConnectStyleError(errorMessage, componentDisplayName) {
-  throw Error(`${errorMessage} - when connecting ${componentDisplayName} component to style.`);
+  throw Error(
+    `${errorMessage} - when connecting ${componentDisplayName} component to style.`,
+  );
 }
 
 /**
@@ -44,7 +45,10 @@ function resolveStyle(context, props, styleNames) {
 
   const style = normalizeStyle(propStyle);
   const theme = getTheme(context);
-  const themeStyle = theme.createComponentStyle(componentStyleName, componentStyle);
+  const themeStyle = theme.createComponentStyle(
+    componentStyleName,
+    componentStyle,
+  );
 
   return resolveComponentStyle(
     componentStyleName,
@@ -132,10 +136,7 @@ export default function connectStyle(
 
       static propTypes = {
         // Element style that overrides any other style of the component
-        style: PropTypes.oneOfType([
-          PropTypes.object,
-          PropTypes.array,
-        ]),
+        style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
         // The style variant names to apply to this component,
         // multiple variants may be separated with a space character
         styleName: PropTypes.string,
@@ -161,7 +162,7 @@ export default function connectStyle(
       constructor(props, context) {
         super(props, context);
 
-        autoBind(this);
+        autoBindReact(this);
 
         const styleNames = resolveStyleNames(props);
         const resolvedStyle = resolveStyle(context, props, styleNames);
@@ -190,7 +191,8 @@ export default function connectStyle(
 
       setNativeProps(nativeProps) {
         if (!isRefDefined(WrappedComponent)) {
-          console.warn('setNativeProps can\'t be used on stateless components');
+          // eslint-disable-next-line no-console
+          console.warn("setNativeProps can't be used on stateless components");
           return;
         }
         if (this.wrappedInstance.setNativeProps) {
@@ -205,6 +207,7 @@ export default function connectStyle(
       resolveAddedProps() {
         const addedProps = {};
         if (options.withRef) {
+          // eslint-disable-next-line no-console
           console.warn('withRef is deprecated');
         }
         if (isRefDefined(WrappedComponent)) {
@@ -225,11 +228,7 @@ export default function connectStyle(
 
         return {
           ...props,
-          style: resolveStyle(
-            this.context,
-            props,
-            styleNames,
-          ).componentStyle,
+          style: resolveStyle(this.context, props, styleNames).componentStyle,
         };
       }
 
@@ -237,11 +236,7 @@ export default function connectStyle(
         const { addedProps, style } = this.state;
 
         return (
-          <WrappedComponent
-            {...this.props}
-            {...addedProps}
-            style={style}
-          />
+          <WrappedComponent {...this.props} {...addedProps} style={style} />
         );
       }
     }

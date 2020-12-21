@@ -13,9 +13,10 @@ function includeSymbolMergeHandler(objVal, srcVal) {
   let include;
 
   if (srcVal && srcVal[INCLUDE]) {
-    include = newObjVal && newObjVal[INCLUDE]
-      ? [...newObjVal[INCLUDE], ...srcVal[INCLUDE]]
-      : srcVal[INCLUDE];
+    include =
+      newObjVal && newObjVal[INCLUDE]
+        ? [...newObjVal[INCLUDE], ...srcVal[INCLUDE]]
+        : srcVal[INCLUDE];
   }
 
   // if objVal doesn't exists create new from source
@@ -74,7 +75,9 @@ export default function resolveIncludes(target, base = {}) {
     const baseStyle = base[styleName];
     if (baseStyle) {
       if (baseStyle[INCLUDE]) {
-        throw Error(`Base style cannot have includes, unexpected include in ${styleName}.`);
+        throw Error(
+          `Base style cannot have includes, unexpected include in ${styleName}.`,
+        );
       }
       style = { ...baseStyle };
     }
@@ -88,6 +91,7 @@ export default function resolveIncludes(target, base = {}) {
     }
 
     if (style === defaultStyle) {
+      // eslint-disable-next-line no-console
       console.warn(`Including unexisting style: ${styleName}`);
     }
 
@@ -113,7 +117,7 @@ export default function resolveIncludes(target, base = {}) {
         throw Error('Include should be array');
       }
 
-      styleNamesToInclude.forEach((styleName) => {
+      styleNamesToInclude.forEach(styleName => {
         if (processingStyleNames.has(styleName)) {
           throw Error(`Circular style include, including ${styleName}`);
         }
@@ -128,10 +132,15 @@ export default function resolveIncludes(target, base = {}) {
       });
     }
 
-    const resultingStyle = _.mergeWith({}, stylesToInclude, styleNode, includeSymbolMergeHandler);
+    const resultingStyle = _.mergeWith(
+      {},
+      stylesToInclude,
+      styleNode,
+      includeSymbolMergeHandler,
+    );
     delete resultingStyle[INCLUDE];
     const styleNames = _.keys(resultingStyle);
-    styleNames.forEach((styleName) => {
+    styleNames.forEach(styleName => {
       resultingStyle[styleName] = includeNodeStyles(
         resultingStyle[styleName],
         processingStyleNames,

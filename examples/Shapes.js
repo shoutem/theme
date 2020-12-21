@@ -1,11 +1,10 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import autoBindReact from 'auto-bind/react';
 import PropTypes from 'prop-types';
-import autoBind from 'auto-bind/react';
-
+import { View, Text } from 'react-native';
 import connectStyle from '../src/connectStyle';
-import StyleProvider from '../src/StyleProvider';
 import { INCLUDE } from '../src/resolveIncludes';
+import StyleProvider from '../src/StyleProvider';
 
 const theme = (variables = {}) => ({
   circle: {
@@ -16,7 +15,6 @@ const theme = (variables = {}) => ({
   },
   'developer.project.screen': {
     'developer.project.view': {
-
       'developer.project.view': {
         '.nestedCircle': {
           [INCLUDE]: ['circle'],
@@ -71,7 +69,7 @@ export default class Shapes extends React.Component {
   constructor(props, context) {
     super(props, context);
 
-    autoBind(this);
+    autoBindReact(this);
 
     const themeVariables = {
       color: 'navy',
@@ -120,10 +118,13 @@ function Screen({ style }) {
       </StyledView>
 
       {/* Virtual prop make component pass parent style rules to children */}
-      <StyledView styleName="square" virtual style={{ backgroundColor: 'navy' }}>
+      <StyledView
+        styleName="square"
+        virtual
+        style={{ backgroundColor: 'navy' }}
+      >
         <StyledView styleName="circle" />
       </StyledView>
-
     </StyledView>
   );
 }

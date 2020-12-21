@@ -42,20 +42,24 @@ function isChildStyle(propertyName) {
  * @returns {*} An object with the componentStyle, styleVariants, and childrenStyle keys.
  */
 function splitStyle(style) {
-  return _.reduce(style, (result, value, key) => {
-    let styleSection = result.componentStyle;
-    if (isStyleVariant(key)) {
-      styleSection = result.styleVariants;
-    } else if (isChildStyle(key)) {
-      styleSection = result.childrenStyle;
-    }
-    styleSection[key] = value;
-    return result;
-  }, {
-    componentStyle: {},
-    styleVariants: {},
-    childrenStyle: {},
-  });
+  return _.reduce(
+    style,
+    (result, value, key) => {
+      let styleSection = result.componentStyle;
+      if (isStyleVariant(key)) {
+        styleSection = result.styleVariants;
+      } else if (isChildStyle(key)) {
+        styleSection = result.childrenStyle;
+      }
+      styleSection[key] = value;
+      return result;
+    },
+    {
+      componentStyle: {},
+      styleVariants: {},
+      childrenStyle: {},
+    },
+  );
 }
 
 /**

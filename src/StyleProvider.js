@@ -20,10 +20,12 @@ export default class StyleProvider extends PureComponent {
   };
 
   static getDerivedStateFromProps(props, state) {
-    return props.style === state.style ? state : {
-      style: props.style,
-      theme: new Theme(props.style),
-    };
+    return props.style === state.style
+      ? state
+      : {
+          style: props.style,
+          theme: new Theme(props.style),
+        };
   }
 
   constructor(props, context) {
