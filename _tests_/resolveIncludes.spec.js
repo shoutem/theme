@@ -22,9 +22,15 @@ describe('resolveIncludes', () => {
       };
       const includedStyle = resolveIncludes(target);
 
-      expect(includedStyle.includeSingleStyle.number).toEqual(target.numberInclude.number);
-      expect(includedStyle.includeMultipleStyles.number).toEqual(target.numberInclude.number);
-      expect(includedStyle.includeMultipleStyles.text).toEqual(target.textInclude.text);
+      expect(includedStyle.includeSingleStyle.number).toEqual(
+        target.numberInclude.number,
+      );
+      expect(includedStyle.includeMultipleStyles.number).toEqual(
+        target.numberInclude.number,
+      );
+      expect(includedStyle.includeMultipleStyles.text).toEqual(
+        target.textInclude.text,
+      );
     });
 
     it('includes nested includes', () => {
@@ -67,7 +73,9 @@ describe('resolveIncludes', () => {
       };
       const includedStyle = resolveIncludes(target);
 
-      expect(includedStyle.includingStyle.number).toEqual(target.secondIncludeNumber.number);
+      expect(includedStyle.includingStyle.number).toEqual(
+        target.secondIncludeNumber.number,
+      );
       expect(includedStyle).toEqual(expectedResolvedStyle);
     });
 
@@ -86,8 +94,12 @@ describe('resolveIncludes', () => {
       };
       const includedStyle = resolveIncludes(target);
 
-      expect(includedStyle.includeAndOverride.number).toEqual(target.includeAndOverride.number);
-      expect(includedStyle.includeAndOverride.text).toEqual(target.textInclude.text);
+      expect(includedStyle.includeAndOverride.number).toEqual(
+        target.includeAndOverride.number,
+      );
+      expect(includedStyle.includeAndOverride.text).toEqual(
+        target.textInclude.text,
+      );
     });
   });
 
@@ -112,9 +124,15 @@ describe('resolveIncludes', () => {
         };
         const includedStyle = resolveIncludes(target, base);
 
-        expect(includedStyle.includeSingleStyleFromBase.number).toEqual(base.numberInclude.number);
-        expect(includedStyle.includeMultipleStyles.number).toEqual(base.numberInclude.number);
-        expect(includedStyle.includeMultipleStyles.text).toEqual(base.textInclude.text);
+        expect(includedStyle.includeSingleStyleFromBase.number).toEqual(
+          base.numberInclude.number,
+        );
+        expect(includedStyle.includeMultipleStyles.number).toEqual(
+          base.numberInclude.number,
+        );
+        expect(includedStyle.includeMultipleStyles.text).toEqual(
+          base.textInclude.text,
+        );
       });
 
       it('base style overrides target properly', () => {
@@ -134,8 +152,12 @@ describe('resolveIncludes', () => {
         };
         const includedStyle = resolveIncludes(target, base);
 
-        expect(includedStyle.includeAndOverride.number).toEqual(target.includeAndOverride.number);
-        expect(includedStyle.includeAndOverride.text).toEqual(base.textInclude.text);
+        expect(includedStyle.includeAndOverride.number).toEqual(
+          target.includeAndOverride.number,
+        );
+        expect(includedStyle.includeAndOverride.text).toEqual(
+          base.textInclude.text,
+        );
       });
 
       it('throws error if base style has include and is required', () => {
@@ -184,13 +206,25 @@ describe('resolveIncludes', () => {
         };
         const includedStyle = resolveIncludes(target, base);
 
-        expect(includedStyle.includeSingleStyle.number).toEqual(target.numberInclude.number);
-        expect(includedStyle.includeSingleStyle.number2).toEqual(base.numberInclude.number2);
+        expect(includedStyle.includeSingleStyle.number).toEqual(
+          target.numberInclude.number,
+        );
+        expect(includedStyle.includeSingleStyle.number2).toEqual(
+          base.numberInclude.number2,
+        );
 
-        expect(includedStyle.includeMultipleStyles.number).toEqual(target.numberInclude.number);
-        expect(includedStyle.includeMultipleStyles.text).toEqual(target.textInclude.text);
-        expect(includedStyle.includeMultipleStyles.number1).toEqual(base.numberInclude.number1);
-        expect(includedStyle.includeMultipleStyles.text1).toEqual(base.textInclude.text1);
+        expect(includedStyle.includeMultipleStyles.number).toEqual(
+          target.numberInclude.number,
+        );
+        expect(includedStyle.includeMultipleStyles.text).toEqual(
+          target.textInclude.text,
+        );
+        expect(includedStyle.includeMultipleStyles.number1).toEqual(
+          base.numberInclude.number1,
+        );
+        expect(includedStyle.includeMultipleStyles.text1).toEqual(
+          base.textInclude.text1,
+        );
       });
 
       it('both overrides target style properly', () => {
@@ -217,10 +251,18 @@ describe('resolveIncludes', () => {
         };
         const includedStyle = resolveIncludes(target, base);
 
-        expect(includedStyle.includeAndOverride.number).toEqual(target.includeAndOverride.number);
-        expect(includedStyle.includeAndOverride.text1).toEqual(target.includeAndOverride.text1);
-        expect(includedStyle.includeAndOverride.text).toEqual(target.textInclude.text);
-        expect(includedStyle.includeAndOverride.number1).toEqual(base.numberInclude.number1);
+        expect(includedStyle.includeAndOverride.number).toEqual(
+          target.includeAndOverride.number,
+        );
+        expect(includedStyle.includeAndOverride.text1).toEqual(
+          target.includeAndOverride.text1,
+        );
+        expect(includedStyle.includeAndOverride.text).toEqual(
+          target.textInclude.text,
+        );
+        expect(includedStyle.includeAndOverride.number1).toEqual(
+          base.numberInclude.number1,
+        );
       });
     });
   });

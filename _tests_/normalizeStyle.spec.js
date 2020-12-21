@@ -11,7 +11,10 @@ import ShorthandsNormalizerFactory, {
 const TEST_VAL = 5;
 describe('normalizeStyle', () => {
   it('normalize all sides', () => {
-    const normalizePropVal = ShorthandsNormalizerFactory.createNormalizer('padding', SIDES);
+    const normalizePropVal = ShorthandsNormalizerFactory.createNormalizer(
+      'padding',
+      SIDES,
+    );
     const expectedStyle = {
       paddingTop: TEST_VAL,
       paddingLeft: TEST_VAL,
@@ -41,7 +44,10 @@ describe('normalizeStyle', () => {
     expect(normalizedStyle).toEqual(expectedStyle);
   });
   it('normalize all corners', () => {
-    const normalizePropVal = ShorthandsNormalizerFactory.createNormalizer('border', CORNERS);
+    const normalizePropVal = ShorthandsNormalizerFactory.createNormalizer(
+      'border',
+      CORNERS,
+    );
     const expectedStyle = {
       borderBottomLeft: TEST_VAL,
       borderBottomRight: TEST_VAL,
@@ -71,7 +77,10 @@ describe('normalizeStyle', () => {
     expect(normalizedStyle).toEqual(expectedStyle);
   });
   it('normalize horizontal', () => {
-    const normalizePropVal = ShorthandsNormalizerFactory.createNormalizer('margin', HORIZONTAL);
+    const normalizePropVal = ShorthandsNormalizerFactory.createNormalizer(
+      'margin',
+      HORIZONTAL,
+    );
     const expectedStyle = {
       marginLeft: TEST_VAL,
       marginRight: TEST_VAL,
@@ -82,7 +91,10 @@ describe('normalizeStyle', () => {
     expect(normalizedStyle).toEqual(expectedStyle);
   });
   it('normalize vertical', () => {
-    const normalizePropVal = ShorthandsNormalizerFactory.createNormalizer('margin', VERTICAL);
+    const normalizePropVal = ShorthandsNormalizerFactory.createNormalizer(
+      'margin',
+      VERTICAL,
+    );
     const expectedStyle = {
       marginTop: TEST_VAL,
       marginBottom: TEST_VAL,

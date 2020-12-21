@@ -1,10 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Text } from 'react-native';
 import { mount } from 'enzyme';
-import { TEST_PROPERTY } from './mocks/ThemeTest';
-import StyleProviderTestAppComponent, {
-  TEST_VARIABLE,
-} from './mocks/StyleProviderTestAppComponent';
+import StyleProviderTestAppComponent from './mocks/StyleProviderTestAppComponent';
 import {
   ConnectedClassComponent,
   ConnectedStatelessComponent,
@@ -18,7 +14,8 @@ describe('connectStyle', () => {
         <ConnectedClassComponent />
       </StyleProviderTestAppComponent>,
     );
-    const passedStyle = demo.find(ConnectedClassComponent).instance().props.style;
+    const passedStyle = demo.find(ConnectedClassComponent).instance().props
+      .style;
 
     expect(passedStyle.testStyle).toBe(undefined);
   });
@@ -34,7 +31,8 @@ describe('connectStyle', () => {
     // Props end up containing the denormalized style (padding: 5).
     // If logged in ConnectStyleTestClassComponent as this.props.style, you end up
     // with normalizedStyle, as expected.
-    const passedStyle = demo.find(ConnectedClassComponent).instance().state.style;
+    const passedStyle = demo.find(ConnectedClassComponent).instance().state
+      .style;
     const normalizedStyle = {
       paddingBottom: 5,
       paddingLeft: 5,
@@ -57,14 +55,14 @@ describe('connectStyle', () => {
     expect(instance instanceof PureComponent).toBeTruthy();
   });
 
-  it('doesn\'t create ref for stateless component', () => {
+  it("doesn't create ref for stateless component", () => {
     const demo = mount(
       <StyleProviderTestAppComponent>
         <ConnectedStatelessComponent />
       </StyleProviderTestAppComponent>,
     );
-    const instance = demo.find(ConnectedStatelessComponent)
-      .instance().props.ref;
+    const instance = demo.find(ConnectedStatelessComponent).instance().props
+      .ref;
 
     expect(instance).toBeFalsy();
   });
@@ -85,7 +83,7 @@ describe('connectStyle', () => {
       expect(instanceContext.parentStyle).toBe(context.parentStyle);
     });
 
-    it('doesn\'t pass parent style to child component as parent style', () => {
+    it("doesn't pass parent style to child component as parent style", () => {
       const context = {
         parentStyle: {
           [componentName]: {

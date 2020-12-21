@@ -12,7 +12,10 @@ describe('StyleProvider', () => {
         <StyleProviderTestComponent />
       </StyleProviderTestAppComponent>,
     );
-    const passedTheme = demo.find(StyleProviderTestComponent).instance().getThemeStyle();
+    const passedTheme = demo
+      .find(StyleProviderTestComponent)
+      .instance()
+      .getThemeStyle();
 
     expect(passedTheme instanceof Theme).toBe(true);
   });

@@ -9,11 +9,7 @@ export default function StyleProviderTestAppComponent({ children }) {
   const themeVariables = { testVariable: TEST_VARIABLE };
   const style = themeInit(themeVariables);
 
-  return (
-    <StyleProvider style={style}>
-      {children}
-    </StyleProvider>
-  );
+  return <StyleProvider style={style}>{children}</StyleProvider>;
 }
 
 StyleProviderTestAppComponent.propTypes = {
