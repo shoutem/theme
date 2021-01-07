@@ -6,7 +6,7 @@ import connectStyle from '../src/connectStyle';
 import { INCLUDE } from '../src/resolveIncludes';
 import StyleProvider from '../src/StyleProvider';
 
-const theme = (variables = {}) => ({
+const resolveTheme = (variables = {}) => ({
   circle: {
     width: variables.circleRadius,
     height: variables.circleRadius,
@@ -50,10 +50,6 @@ const theme = (variables = {}) => ({
     },
   },
 });
-
-function resolveTheme(themeVariables) {
-  return theme(themeVariables);
-}
 
 export default class Shapes extends React.Component {
   static propTypes = {
