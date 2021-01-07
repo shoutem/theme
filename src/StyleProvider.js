@@ -1,4 +1,4 @@
-import React, { PureComponent, Children } from 'react'; // eslint-disable-line
+import { PureComponent, Children } from 'react';
 import PropTypes from 'prop-types';
 import Theme, { ThemeShape } from './Theme';
 

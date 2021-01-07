@@ -83,6 +83,9 @@
   "eslintConfig": {
     "extends": "@shoutem/react",
     "parser": "babel-eslint",
+    "rules": {
+      "react/no-did-update-set-state": "off"
+    },
     "parserOptions": {
       "ecmaVersion": 6,
       "sourceType": "module"

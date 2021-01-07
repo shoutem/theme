@@ -178,6 +178,47 @@ export default function connectStyle(
         };
       }
 
+      componentDidUpdate(prevProps) {
+        const styleNames = resolveStyleNames(this.props);
+
+        if (this.shouldRebuildStyle(prevProps, styleNames)) {
+          const resolvedStyle = resolveStyle(
+            this.context,
+            this.props,
+            styleNames,
+          );
+
+          this.setState({
+            style: resolvedStyle.componentStyle,
+            childrenStyle: resolvedStyle.childrenStyle,
+            styleNames,
+          });
+        }
+      }
+
+      hasStyleNameChanged(prevProps, styleNames) {
+        const { styleNames: currentStyleNames } = this.state;
+
+        return (
+          mapPropsToStyleNames &&
+          this.props !== prevProps &&
+          // Even though props did change here, it doesn't necessarily mean
+          // props that affect styleName have changed
+          !_.isEqual(currentStyleNames, styleNames)
+        );
+      }
+
+      shouldRebuildStyle(prevProps, styleNames) {
+        const { style, styleName } = this.props;
+        const { style: prevStyle, styleName: prevStyleName } = prevProps;
+
+        return (
+          prevStyle !== style ||
+          prevStyleName !== styleName ||
+          this.hasStyleNameChanged(prevProps, styleNames)
+        );
+      }
+
       getChildContext() {
         const { virtual } = this.props;
         const { childrenStyle } = this.state;
