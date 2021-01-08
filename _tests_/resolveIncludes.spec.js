@@ -1,5 +1,4 @@
 import resolveIncludes, { INCLUDE } from '../src/resolveIncludes';
-import { assert } from 'chai';
 
 // TODO(Braco) - complete tests
 // base including style which it contains itself but it's also in target
@@ -23,20 +22,14 @@ describe('resolveIncludes', () => {
       };
       const includedStyle = resolveIncludes(target);
 
-      assert.equal(
-        includedStyle.includeSingleStyle.number,
+      expect(includedStyle.includeSingleStyle.number).toEqual(
         target.numberInclude.number,
-        'style not included properly'
       );
-      assert.equal(
-        includedStyle.includeMultipleStyles.number,
+      expect(includedStyle.includeMultipleStyles.number).toEqual(
         target.numberInclude.number,
-        'first style include not included properly'
       );
-      assert.equal(
-        includedStyle.includeMultipleStyles.text,
+      expect(includedStyle.includeMultipleStyles.text).toEqual(
         target.textInclude.text,
-        'second style include not included properly'
       );
     });
 
@@ -80,16 +73,10 @@ describe('resolveIncludes', () => {
       };
       const includedStyle = resolveIncludes(target);
 
-      assert.equal(
-        includedStyle.includingStyle.number,
+      expect(includedStyle.includingStyle.number).toEqual(
         target.secondIncludeNumber.number,
-        'style not included properly'
       );
-      assert.deepEqual(
-        includedStyle,
-        expectedResolvedStyle,
-        'style not resolved properly'
-      );
+      expect(includedStyle).toEqual(expectedResolvedStyle);
     });
 
     it('target style overrides it self properly', () => {
@@ -107,15 +94,11 @@ describe('resolveIncludes', () => {
       };
       const includedStyle = resolveIncludes(target);
 
-      assert.equal(
-        includedStyle.includeAndOverride.number,
+      expect(includedStyle.includeAndOverride.number).toEqual(
         target.includeAndOverride.number,
-        'included style override defined style'
       );
-      assert.equal(
-        includedStyle.includeAndOverride.text,
+      expect(includedStyle.includeAndOverride.text).toEqual(
         target.textInclude.text,
-        'included style didn\'t override defined style'
       );
     });
   });
@@ -141,20 +124,14 @@ describe('resolveIncludes', () => {
         };
         const includedStyle = resolveIncludes(target, base);
 
-        assert.equal(
-          includedStyle.includeSingleStyleFromBase.number,
+        expect(includedStyle.includeSingleStyleFromBase.number).toEqual(
           base.numberInclude.number,
-          'style not included properly'
         );
-        assert.equal(
-          includedStyle.includeMultipleStyles.number,
+        expect(includedStyle.includeMultipleStyles.number).toEqual(
           base.numberInclude.number,
-          'first style include not included properly'
         );
-        assert.equal(
-          includedStyle.includeMultipleStyles.text,
+        expect(includedStyle.includeMultipleStyles.text).toEqual(
           base.textInclude.text,
-          'second style include not included properly'
         );
       });
 
@@ -175,15 +152,11 @@ describe('resolveIncludes', () => {
         };
         const includedStyle = resolveIncludes(target, base);
 
-        assert.equal(
-          includedStyle.includeAndOverride.number,
+        expect(includedStyle.includeAndOverride.number).toEqual(
           target.includeAndOverride.number,
-          'included style override defined style'
         );
-        assert.equal(
-          includedStyle.includeAndOverride.text,
+        expect(includedStyle.includeAndOverride.text).toEqual(
           base.textInclude.text,
-          'included style didn\'t override defined style'
         );
       });
 
@@ -200,9 +173,9 @@ describe('resolveIncludes', () => {
           },
         };
 
-        assert.throws(() => {
+        expect(() => {
           resolveIncludes(target, base);
-        }, 'Base style cannot have includes');
+        }).toThrow();
       });
     });
 
@@ -233,36 +206,24 @@ describe('resolveIncludes', () => {
         };
         const includedStyle = resolveIncludes(target, base);
 
-        assert.equal(
-          includedStyle.includeSingleStyle.number,
+        expect(includedStyle.includeSingleStyle.number).toEqual(
           target.numberInclude.number,
-          'style not included properly from target'
         );
-        assert.equal(
-          includedStyle.includeSingleStyle.number2,
+        expect(includedStyle.includeSingleStyle.number2).toEqual(
           base.numberInclude.number2,
-          'style not included properly from base'
         );
 
-        assert.equal(
-          includedStyle.includeMultipleStyles.number,
+        expect(includedStyle.includeMultipleStyles.number).toEqual(
           target.numberInclude.number,
-          'first style not included properly from target'
         );
-        assert.equal(
-          includedStyle.includeMultipleStyles.text,
+        expect(includedStyle.includeMultipleStyles.text).toEqual(
           target.textInclude.text,
-          'second style not included properly from target'
         );
-        assert.equal(
-          includedStyle.includeMultipleStyles.number1,
+        expect(includedStyle.includeMultipleStyles.number1).toEqual(
           base.numberInclude.number1,
-          'first style not included properly from base'
         );
-        assert.equal(
-          includedStyle.includeMultipleStyles.text1,
+        expect(includedStyle.includeMultipleStyles.text1).toEqual(
           base.textInclude.text1,
-          'second style not included properly from base'
         );
       });
 
@@ -290,25 +251,17 @@ describe('resolveIncludes', () => {
         };
         const includedStyle = resolveIncludes(target, base);
 
-        assert.equal(
-          includedStyle.includeAndOverride.number,
+        expect(includedStyle.includeAndOverride.number).toEqual(
           target.includeAndOverride.number,
-          'included target style override defined style'
         );
-        assert.equal(
-          includedStyle.includeAndOverride.text1,
+        expect(includedStyle.includeAndOverride.text1).toEqual(
           target.includeAndOverride.text1,
-          'included base style override defined style'
         );
-        assert.equal(
-          includedStyle.includeAndOverride.text,
+        expect(includedStyle.includeAndOverride.text).toEqual(
           target.textInclude.text,
-          'included target style didn\'t override defined style'
         );
-        assert.equal(
-          includedStyle.includeAndOverride.number1,
+        expect(includedStyle.includeAndOverride.number1).toEqual(
           base.numberInclude.number1,
-          'included base style didn\'t override defined style'
         );
       });
     });
@@ -325,9 +278,9 @@ describe('resolveIncludes', () => {
         },
       };
 
-      assert.throws(() => {
+      expect(() => {
         resolveIncludes(target);
-      }, 'Circular style include');
+      }).toThrow();
     });
     it('throws error on circular nested include from target', () => {
       const target = {
@@ -341,9 +294,9 @@ describe('resolveIncludes', () => {
         },
       };
 
-      assert.throws(() => {
+      expect(() => {
         resolveIncludes(target);
-      }, 'Circular style include');
+      }).toThrow();
     });
   });
 
@@ -356,11 +309,7 @@ describe('resolveIncludes', () => {
         },
       };
       const includedStyles = resolveIncludes(target);
-      assert.equal(
-        includedStyles.testInclude.test,
-        target.testInclude.test,
-        'style not resolved properly'
-      );
+      expect(includedStyles.testInclude.test).toEqual(target.testInclude.test);
     });
     it('successfully with empty include value', () => {
       const target = {
@@ -371,27 +320,23 @@ describe('resolveIncludes', () => {
       };
       const includedStyles = resolveIncludes(target);
 
-      assert.equal(
-        includedStyles.testInclude.test,
-        target.testInclude.test,
-        'style not resolved properly'
-      );
+      expect(includedStyles.testInclude.test).toEqual(target.testInclude.test);
     });
     it('throws error if include not array but is "true"', () => {
-      assert.throws(() => {
+      expect(() => {
         resolveIncludes({
           testInclude: {
             [INCLUDE]: 's',
           },
         });
-      }, 'Include should be array');
-      assert.throws(() => {
+      }).toThrow();
+      expect(() => {
         resolveIncludes({
           testInclude1: {
             [INCLUDE]: 1,
           },
         });
-      }, 'Include should be array');
+      }).toThrow();
     });
     it('without error if include is "not"', () => {
       const undefinedInclude = {
@@ -409,16 +354,8 @@ describe('resolveIncludes', () => {
       delete undefinedInclude.testInclude[INCLUDE];
       delete falseInclude.testInclude[INCLUDE];
 
-      assert.deepEqual(
-        resolveIncludes(undefinedInclude),
-        undefinedInclude,
-        'undefined include not resolved properly'
-      );
-      assert.deepEqual(
-        resolveIncludes(falseInclude),
-        falseInclude,
-        'false include not resolved properly'
-      );
+      expect(resolveIncludes(undefinedInclude)).toEqual(undefinedInclude);
+      expect(resolveIncludes(falseInclude)).toEqual(falseInclude);
     });
   });
 });

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import resolveIncludes from './resolveIncludes';
 import mergeComponentAndThemeStyles from './mergeComponentAndThemeStyles';
+import resolveIncludes from './resolveIncludes';
 import normalizeStyle from './StyleNormalizer/normalizeStyle';
 
 // Privates, ideally those should be symbols
@@ -9,7 +9,8 @@ const THEME_STYLE_CACHE = '@@shoutem.theme/themeCachedStyle';
 
 let defaultTheme;
 
-const resolveStyle = (style, baseStyle) => normalizeStyle(resolveIncludes(style, baseStyle));
+const resolveStyle = (style, baseStyle) =>
+  normalizeStyle(resolveIncludes(style, baseStyle));
 
 /**
  * The theme defines the application style, and provides methods to
@@ -76,7 +77,10 @@ export default class Theme {
       return this[THEME_STYLE_CACHE][componentName];
     }
 
-    const componentIncludedStyle = resolveStyle(defaultStyle, this[THEME_STYLE]);
+    const componentIncludedStyle = resolveStyle(
+      defaultStyle,
+      this[THEME_STYLE],
+    );
 
     /**
      * This is static component style (static per componentName). This style can only
@@ -86,7 +90,7 @@ export default class Theme {
     this[THEME_STYLE_CACHE][componentName] = mergeComponentAndThemeStyles(
       componentIncludedStyle,
       this[THEME_STYLE][componentName],
-      this[THEME_STYLE]
+      this[THEME_STYLE],
     );
 
     return this[THEME_STYLE_CACHE][componentName];

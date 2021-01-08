@@ -1,21 +1,27 @@
-// setup jsdom globally so that we can mount
-// React components in the tests.
+import 'react-native';
+import 'jest-enzyme';
+import Enzyme from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
 
-var jsdom = require('jsdom').jsdom;
+const { JSDOM } = require('jsdom');
 
-var exposedProperties = ['window', 'navigator', 'document'];
-
-global.document = jsdom('');
-global.window = document.defaultView;
-Object.keys(document.defaultView).forEach((property) => {
-  if (typeof global[property] === 'undefined') {
-    exposedProperties.push(property);
-    global[property] = document.defaultView[property];
-  }
+const jsdom = new JSDOM('<!doctype html><html><body></body></html>', {
+  url: 'https://localhost',
 });
+const { window } = jsdom;
 
+function copyProps(src, target) {
+  Object.defineProperties(target, {
+    ...Object.getOwnPropertyDescriptors(src),
+    ...Object.getOwnPropertyDescriptors(target),
+  });
+}
+
+global.window = window;
+global.document = window.document;
 global.navigator = {
   userAgent: 'node.js',
 };
+copyProps(window, global);
 
-documentRef = document;
+Enzyme.configure({ adapter: new Adapter() });

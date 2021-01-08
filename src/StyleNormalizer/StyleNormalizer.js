@@ -23,8 +23,11 @@ export default class StyleNormalizer {
         throw Error(`Normalizer for '${propName}' shorthand already exists`);
       }
 
-      this.normalizers[propName] =
-        ShorthandsNormalizerFactory.createNormalizer(prop, shorthand, suffix);
+      this.normalizers[propName] = ShorthandsNormalizerFactory.createNormalizer(
+        prop,
+        shorthand,
+        suffix,
+      );
     });
   }
 

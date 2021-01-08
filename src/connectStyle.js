@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
+import autoBindReact from 'auto-bind/react';
 import hoistStatics from 'hoist-non-react-statics';
 import _ from 'lodash';
-
+import PropTypes from 'prop-types';
 import normalizeStyle from './StyleNormalizer/normalizeStyle';
-import { resolveComponentStyle } from './resolveComponentStyle';
+import resolveComponentStyle from './resolveComponentStyle';
 import Theme, { ThemeShape } from './Theme';
 
 // TODO - remove withRef warning in next version
@@ -16,7 +16,9 @@ import Theme, { ThemeShape } from './Theme';
  * @param componentDisplayName The name of the component that is being connected.
  */
 function throwConnectStyleError(errorMessage, componentDisplayName) {
-  throw Error(`${errorMessage} - when connecting ${componentDisplayName} component to style.`);
+  throw Error(
+    `${errorMessage} - when connecting ${componentDisplayName} component to style.`,
+  );
 }
 
 /**
@@ -30,6 +32,43 @@ function getTheme(context) {
   // Fallback to a default theme if the component isn't
   // rendered in a StyleProvider.
   return context.theme || Theme.getDefaultTheme();
+}
+
+function isRefDefined(WrappedComponent) {
+  // Define refs on all stateful containers
+  return WrappedComponent.prototype.render;
+}
+
+function resolveStyle(context, props, styleNames) {
+  const { parentStyle } = context;
+  const { componentStyle, componentStyleName, style: propStyle } = props;
+
+  const style = normalizeStyle(propStyle);
+  const theme = getTheme(context);
+  const themeStyle = theme.createComponentStyle(
+    componentStyleName,
+    componentStyle,
+  );
+
+  return resolveComponentStyle(
+    componentStyleName,
+    styleNames,
+    themeStyle,
+    parentStyle,
+    style,
+  );
+}
+
+function resolveStyleNames(props) {
+  const { mapPropsToStyleNames, styleName } = props;
+  const styleNames = styleName ? styleName.split(/\s/g) : [];
+
+  if (!mapPropsToStyleNames) {
+    return styleNames;
+  }
+
+  // We only want to keep the unique style names
+  return _.uniq(mapPropsToStyleNames(styleNames, props));
 }
 
 /**
@@ -50,7 +89,7 @@ export default function connectStyle(
   componentStyleName,
   componentStyle = {},
   mapPropsToStyleNames,
-  options = {}
+  options = {},
 ) {
   function getComponentDisplayName(WrappedComponent) {
     return WrappedComponent.displayName || WrappedComponent.name || 'Component';
@@ -60,6 +99,7 @@ export default function connectStyle(
     if (WrappedComponent.BaseComponent) {
       return WrappedComponent.BaseComponent;
     }
+
     return WrappedComponent;
   }
 
@@ -69,14 +109,14 @@ export default function connectStyle(
     if (!_.isPlainObject(componentStyle)) {
       throwConnectStyleError(
         'Component style must be plain object',
-        componentDisplayName
+        componentDisplayName,
       );
     }
 
     if (!_.isString(componentStyleName)) {
       throwConnectStyleError(
         'Component Style Name must be string',
-        componentDisplayName
+        componentDisplayName,
       );
     }
 
@@ -96,10 +136,7 @@ export default function connectStyle(
 
       static propTypes = {
         // Element style that overrides any other style of the component
-        style: PropTypes.oneOfType([
-          PropTypes.object,
-          PropTypes.array,
-        ]),
+        style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
         // The style variant names to apply to this component,
         // multiple variants may be separated with a space character
         styleName: PropTypes.string,
@@ -111,21 +148,24 @@ export default function connectStyle(
       };
 
       static defaultProps = {
+        style: {},
+        styleName: '',
         virtual: options.virtual,
       };
 
       static displayName = `Styled(${componentDisplayName})`;
+
       static WrappedComponent = WrappedComponent;
+
       static BaseComponent = getBaseComponent(WrappedComponent);
 
       constructor(props, context) {
         super(props, context);
 
-        const styleNames = this.resolveStyleNames(props);
-        const resolvedStyle = this.resolveStyle(context, props, styleNames);
+        autoBindReact(this);
 
-        this.setWrappedInstance = this.setWrappedInstance.bind(this);
-        this.transformProps = this.transformProps.bind(this);
+        const styleNames = resolveStyleNames(props);
+        const resolvedStyle = resolveStyle(context, props, styleNames);
 
         this.state = {
           style: resolvedStyle.componentStyle,
@@ -134,24 +174,19 @@ export default function connectStyle(
           // Usually they are set through alternative ways,
           // such as theme style, or through options
           addedProps: this.resolveAddedProps(),
-          styleNames,
-        };
-      }
-
-      getChildContext() {
-        return {
-          parentStyle: this.props.virtual ?
-            this.context.parentStyle :
-            this.state.childrenStyle,
-          transformProps: this.transformProps,
+          styleNames, // eslint-disable-line
         };
       }
 
       componentDidUpdate(prevProps) {
-        const styleNames = this.resolveStyleNames(this.props);
+        const styleNames = resolveStyleNames(this.props);
 
         if (this.shouldRebuildStyle(prevProps, styleNames)) {
-          const resolvedStyle = this.resolveStyle(this.context, this.props, styleNames);
+          const resolvedStyle = resolveStyle(
+            this.context,
+            this.props,
+            styleNames,
+          );
 
           this.setState({
             style: resolvedStyle.componentStyle,
@@ -161,9 +196,44 @@ export default function connectStyle(
         }
       }
 
+      hasStyleNameChanged(prevProps, styleNames) {
+        const { styleNames: currentStyleNames } = this.state;
+
+        return (
+          mapPropsToStyleNames &&
+          this.props !== prevProps &&
+          // Even though props did change here, it doesn't necessarily mean
+          // props that affect styleName have changed
+          !_.isEqual(currentStyleNames, styleNames)
+        );
+      }
+
+      shouldRebuildStyle(prevProps, styleNames) {
+        const { style, styleName } = this.props;
+        const { style: prevStyle, styleName: prevStyleName } = prevProps;
+
+        return (
+          prevStyle !== style ||
+          prevStyleName !== styleName ||
+          this.hasStyleNameChanged(prevProps, styleNames)
+        );
+      }
+
+      getChildContext() {
+        const { virtual } = this.props;
+        const { childrenStyle } = this.state;
+        const { parentStyle } = this.context;
+
+        return {
+          parentStyle: virtual ? parentStyle : childrenStyle,
+          transformProps: this.transformProps,
+        };
+      }
+
       setNativeProps(nativeProps) {
-        if (!this.isRefDefined()) {
-          console.warn('setNativeProps can\'t be used on stateless components');
+        if (!isRefDefined(WrappedComponent)) {
+          // eslint-disable-next-line no-console
+          console.warn("setNativeProps can't be used on stateless components");
           return;
         }
         if (this.wrappedInstance.setNativeProps) {
@@ -175,61 +245,16 @@ export default function connectStyle(
         this.wrappedInstance = component;
       }
 
-      hasStyleNameChanged(prevProps, styleNames) {
-        return mapPropsToStyleNames && this.props !== prevProps &&
-          // Even though props did change here, it doesn't necessarily mean
-          // props that affect styleName have changed
-          !_.isEqual(this.state.styleNames, styleNames);
-      }
-
-      shouldRebuildStyle(prevProps, styleNames) {
-        return (prevProps.style !== this.props.style) ||
-          (prevProps.styleName !== this.props.styleName) ||
-          (this.hasStyleNameChanged(prevProps, styleNames));
-      }
-
-      resolveStyleNames(props) {
-        const { styleName } = props;
-        const styleNames = styleName ? styleName.split(/\s/g) : [];
-
-        if (!mapPropsToStyleNames) {
-          return styleNames;
-        }
-
-        // We only want to keep the unique style names
-        return _.uniq(mapPropsToStyleNames(styleNames, props));
-      }
-
-      isRefDefined() {
-        // Define refs on all stateful containers
-        return WrappedComponent.prototype.render;
-      }
-
       resolveAddedProps() {
         const addedProps = {};
         if (options.withRef) {
+          // eslint-disable-next-line no-console
           console.warn('withRef is deprecated');
         }
-        if (this.isRefDefined()) {
-          addedProps.ref = this.setWrappedInstance;
+        if (isRefDefined(WrappedComponent)) {
+          addedProps.ref = this.setWrappedInstance(WrappedComponent);
         }
         return addedProps;
-      }
-
-      resolveStyle(context, props, styleNames) {
-        const { parentStyle } = context;
-        const style = normalizeStyle(props.style);
-
-        const theme = getTheme(context);
-        const themeStyle = theme.createComponentStyle(componentStyleName, componentStyle);
-
-        return resolveComponentStyle(
-          componentStyleName,
-          styleNames,
-          themeStyle,
-          parentStyle,
-          style
-        );
       }
 
       /**
@@ -240,28 +265,23 @@ export default function connectStyle(
        * @returns {*} The transformed props.
        */
       transformProps(props) {
-        const styleNames = this.resolveStyleNames(props);
+        const styleNames = resolveStyleNames(props);
+
         return {
           ...props,
-          style: this.resolveStyle(
-            this.context,
-            props,
-            styleNames
-          ).componentStyle,
+          style: resolveStyle(this.context, props, styleNames).componentStyle,
         };
       }
 
       render() {
         const { addedProps, style } = this.state;
+
         return (
-          <WrappedComponent
-            {...this.props}
-            {...addedProps}
-            style={style}
-          />);
+          <WrappedComponent {...this.props} {...addedProps} style={style} />
+        );
       }
     }
 
     return hoistStatics(StyledComponent, WrappedComponent);
   };
-};
+}

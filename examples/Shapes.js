@@ -1,11 +1,12 @@
 import React from 'react';
+import autoBindReact from 'auto-bind/react';
 import PropTypes from 'prop-types';
-import connectStyle from '../src/connectStyle';
-import StyleProvider from '../src/StyleProvider';
-import { INCLUDE } from '../src/resolveIncludes';
 import { View, Text } from 'react-native';
+import connectStyle from '../src/connectStyle';
+import { INCLUDE } from '../src/resolveIncludes';
+import StyleProvider from '../src/StyleProvider';
 
-const theme = (variables = {}) => ({
+const resolveTheme = (variables = {}) => ({
   circle: {
     width: variables.circleRadius,
     height: variables.circleRadius,
@@ -14,7 +15,6 @@ const theme = (variables = {}) => ({
   },
   'developer.project.screen': {
     'developer.project.view': {
-
       'developer.project.view': {
         '.nestedCircle': {
           [INCLUDE]: ['circle'],
@@ -51,7 +51,7 @@ const theme = (variables = {}) => ({
   },
 });
 
-export  default class Shapes extends React.Component {
+export default class Shapes extends React.Component {
   static propTypes = {
     themeVariables: PropTypes.object,
     screenStyle: PropTypes.object,
@@ -64,7 +64,8 @@ export  default class Shapes extends React.Component {
 
   constructor(props, context) {
     super(props, context);
-    this.updateThemeVariable = this.updateThemeVariable.bind(this);
+
+    autoBindReact(this);
 
     const themeVariables = {
       color: 'navy',
@@ -80,29 +81,31 @@ export  default class Shapes extends React.Component {
   }
 
   updateThemeVariable(key, val) {
-    const themeVariables = { ...this.state.themeVariables, [key]: val };
-    this.setState({ themeVariables });
-  }
+    const { themeVariables } = this.state;
 
-  resolveTheme(themeVariables) {
-    return theme(themeVariables);
+    const newThemeVariables = { ...themeVariables, [key]: val };
+    this.setState({ themeVariables: newThemeVariables });
   }
 
   render() {
+    const { screenStyle } = this.props;
     const { themeVariables } = this.state;
+
     return (
-      <StyleProvider style={this.resolveTheme(themeVariables)}>
-        <StyledScreen style={this.props.screenStyle} />
+      <StyleProvider style={resolveTheme(themeVariables)}>
+        <StyledScreen style={screenStyle} />
       </StyleProvider>
     );
   }
 }
 
 function Screen({ style }) {
+  const { container, title } = style;
+
   // connectStyle creates HOC which pass theme style to component by it style name automatically
   return (
-    <StyledView style={style.container} virtual>
-      <Text style={style.title}>Theme Screen</Text>
+    <StyledView style={container} virtual>
+      <Text style={title}>Theme Screen</Text>
 
       <StyledView styleName="square">
         {/* Circle styleName is not applied because it is not nested properly in theme */}
@@ -111,16 +114,23 @@ function Screen({ style }) {
       </StyledView>
 
       {/* Virtual prop make component pass parent style rules to children */}
-      <StyledView styleName="square" virtual style={{ backgroundColor: 'navy' }}>
+      <StyledView
+        styleName="square"
+        virtual
+        style={{ backgroundColor: 'navy' }}
+      >
         <StyledView styleName="circle" />
       </StyledView>
-
     </StyledView>
   );
 }
 
 Screen.propTypes = {
   style: PropTypes.object,
+};
+
+Screen.defaultProps = {
+  style: {},
 };
 
 // Component style name - developer.project.screen

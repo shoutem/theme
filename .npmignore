@@ -1,3 +1,5 @@
+examples
+
 # Node
 node_modules
 
@@ -6,6 +8,7 @@ node_modules
 
 # Ignore test folders
 *_tests_
+test-utils
 
 # Ignore local/config files
 .editorconfig
