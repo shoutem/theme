@@ -39,26 +39,6 @@ function isRefDefined(WrappedComponent) {
   return WrappedComponent.prototype.render;
 }
 
-function resolveStyle(context, props, styleNames) {
-  const { parentStyle } = context;
-  const { componentStyle, componentStyleName, style: propStyle } = props;
-
-  const style = normalizeStyle(propStyle);
-  const theme = getTheme(context);
-  const themeStyle = theme.createComponentStyle(
-    componentStyleName,
-    componentStyle,
-  );
-
-  return resolveComponentStyle(
-    componentStyleName,
-    styleNames,
-    themeStyle,
-    parentStyle,
-    style,
-  );
-}
-
 function resolveStyleNames(props) {
   const { mapPropsToStyleNames, styleName } = props;
   const styleNames = styleName ? styleName.split(/\s/g) : [];
@@ -91,6 +71,26 @@ export default function connectStyle(
   mapPropsToStyleNames,
   options = {},
 ) {
+  function resolveStyle(context, props, styleNames) {
+    const { parentStyle } = context;
+    const { style: propStyle } = props;
+
+    const style = normalizeStyle(propStyle);
+    const theme = getTheme(context);
+    const themeStyle = theme.createComponentStyle(
+      componentStyleName,
+      componentStyle,
+    );
+
+    return resolveComponentStyle(
+      componentStyleName,
+      styleNames,
+      themeStyle,
+      parentStyle,
+      style,
+    );
+  }
+
   function getComponentDisplayName(WrappedComponent) {
     return WrappedComponent.displayName || WrappedComponent.name || 'Component';
   }
@@ -187,6 +187,8 @@ export default function connectStyle(
             this.props,
             styleNames,
           );
+
+          console.log("resolvedStyle in connectStyle componentDidUpdate", resolvedStyle);
 
           this.setState({
             style: resolvedStyle.componentStyle,
