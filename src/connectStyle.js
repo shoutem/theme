@@ -138,7 +138,7 @@ export default function connectStyle(
 
       getChildContext() {
         const virtual = _.get(this.props, 'virtual');
-        const parentStyle = _.get(this.props, 'parentStyle');
+        const parentStyle = _.get(this.context, 'parentStyle');
         const childrenStyle = _.get(this.state, 'childrenStyle');
 
         return {
@@ -181,7 +181,7 @@ export default function connectStyle(
       }
 
       hasStyleNameChanged(prevProps, styleNames) {
-        const { styleNames: stateStyleNames } = this.state;
+        const stateStyleNames = _.get(this.state, 'styleNames');
 
         return (
           mapPropsToStyleNames &&
@@ -257,11 +257,15 @@ export default function connectStyle(
        */
       transformProps(props) {
         const styleNames = this.resolveStyleNames(props);
+        const componentStyle = this.resolveStyle(
+          this.context,
+          props,
+          styleNames,
+        );
 
         return {
           ...props,
-          style: this.resolveStyle(this.context, props, styleNames)
-            .componentStyle,
+          style: this.resolveStyle(this.context, props, styleNames).componentStyle,
         };
       }
 
@@ -276,4 +280,4 @@ export default function connectStyle(
 
     return hoistStatics(StyledComponent, WrappedComponent);
   };
-}
+};
