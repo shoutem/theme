@@ -1,4 +1,3 @@
-import { assert } from 'chai';
 import StyleNormalizer from '../src/StyleNormalizer/StyleNormalizer';
 import {
   SIDES,
@@ -13,39 +12,39 @@ describe('StyleNormalizer', () => {
       const styleNormalizer = new StyleNormalizer();
       styleNormalizer.createNormalizers('test', [SIDES]);
 
-      assert.isOk(styleNormalizer.normalizers.test, 'normalizer not created');
+      expect(styleNormalizer.normalizers.test).toBeTruthy();
     });
     it('creates proper horizontal normalizers', () => {
       const styleNormalizer = new StyleNormalizer();
       styleNormalizer.createNormalizers('test', [HORIZONTAL]);
 
-      assert.isOk(styleNormalizer.normalizers.testHorizontal, 'normalizer not created');
+      expect(styleNormalizer.normalizers.testHorizontal).toBeTruthy();
     });
     it('creates proper vertical normalizers', () => {
       const styleNormalizer = new StyleNormalizer();
       styleNormalizer.createNormalizers('test', [VERTICAL]);
 
-      assert.isOk(styleNormalizer.normalizers.testVertical, 'normalizer not created');
+      expect(styleNormalizer.normalizers.testVertical).toBeTruthy();
     });
     it('creates proper horizontal normalizers', () => {
       const styleNormalizer = new StyleNormalizer();
       styleNormalizer.createNormalizers('test', [CORNERS]);
 
-      assert.isOk(styleNormalizer.normalizers.test, 'normalizer not created');
+      expect(styleNormalizer.normalizers.test).toBeTruthy();
     });
     it('creates multiple normalizers', () => {
       const styleNormalizer = new StyleNormalizer();
       styleNormalizer.createNormalizers('test', [SIDES, HORIZONTAL, VERTICAL]);
 
-      assert.isOk(styleNormalizer.normalizers.test, 'normalizer not created');
-      assert.isOk(styleNormalizer.normalizers.testHorizontal, 'normalizer not created');
-      assert.isOk(styleNormalizer.normalizers.testVertical, 'normalizer not created');
+      expect(styleNormalizer.normalizers.test).toBeTruthy();
+      expect(styleNormalizer.normalizers.testHorizontal).toBeTruthy();
+      expect(styleNormalizer.normalizers.testVertical).toBeTruthy();
     });
     it('throws error if normalizer for shorthand already exists', () => {
       const styleNormalizer = new StyleNormalizer();
-      assert.throws(() => {
+      expect(() => {
         styleNormalizer.createNormalizers('test', [SIDES, CORNERS]);
-      }, 'Normalizer for \'test\' shorthand already exists');
+      }).toThrow();
     });
   });
   describe('normalizers creation with suffix', () => {
@@ -53,14 +52,14 @@ describe('StyleNormalizer', () => {
       const styleNormalizer = new StyleNormalizer();
       styleNormalizer.createNormalizers('test', [SIDES], 'Suffix');
 
-      assert.isOk(styleNormalizer.normalizers.testSuffix, 'normalizer not created');
+      expect(styleNormalizer.normalizers.testSuffix).toBeTruthy();
     });
     it('creates proper normalizers with suffix', () => {
       const styleNormalizer = new StyleNormalizer();
       styleNormalizer.createNormalizers('test', [SIDES, VERTICAL], 'Suffix');
 
-      assert.isOk(styleNormalizer.normalizers.testSuffix, 'normalizer not created');
-      assert.isOk(styleNormalizer.normalizers.testVerticalSuffix, 'normalizer not created');
+      expect(styleNormalizer.normalizers.testSuffix).toBeTruthy();
+      expect(styleNormalizer.normalizers.testVerticalSuffix).toBeTruthy();
     });
   });
 });

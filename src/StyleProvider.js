@@ -1,4 +1,4 @@
-import React, { PureComponent, Children } from 'react';
+import { PureComponent, Children } from 'react';
 import PropTypes from 'prop-types';
 import Theme, { ThemeShape } from './Theme';
 
@@ -20,10 +20,12 @@ export default class StyleProvider extends PureComponent {
   };
 
   static getDerivedStateFromProps(props, state) {
-    return props.style === state.style ? state : {
-      style: props.style,
-      theme: new Theme(props.style),
-    };
+    return props.style === state.style
+      ? state
+      : {
+          style: props.style,
+          theme: new Theme(props.style),
+        };
   }
 
   constructor(props, context) {
@@ -35,9 +37,9 @@ export default class StyleProvider extends PureComponent {
   }
 
   getChildContext() {
-    return {
-      theme: this.state.theme,
-    };
+    const { theme } = this.state;
+
+    return { theme };
   }
 
   render() {

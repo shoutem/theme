@@ -1,7 +1,7 @@
-import React from 'react-native';
-import { assert } from 'chai';
+import React from 'react';
 import { mount } from 'enzyme';
-import { Theme } from '../';
+
+import Theme from '../src/Theme';
 import StyleProviderTestAppComponent from './mocks/StyleProviderTestAppComponent';
 import StyleProviderTestComponent from './mocks/StyleProviderTestComponent';
 
@@ -10,10 +10,13 @@ describe('StyleProvider', () => {
     const demo = mount(
       <StyleProviderTestAppComponent>
         <StyleProviderTestComponent />
-      </StyleProviderTestAppComponent>
+      </StyleProviderTestAppComponent>,
     );
-    const passedTheme = demo.find(StyleProviderTestComponent).nodes[0].getThemeStyle();
+    const passedTheme = demo
+      .find(StyleProviderTestComponent)
+      .instance()
+      .getThemeStyle();
 
-    assert.isTrue(passedTheme instanceof Theme, 'theme not available in context');
+    expect(passedTheme instanceof Theme).toBe(true);
   });
 });
