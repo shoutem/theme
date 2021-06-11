@@ -214,6 +214,10 @@ export default function connectStyle(
 
       isRefDefined() {
         // Define refs on all stateful containers
+        if (!WrappedComponent.prototype) {
+          return undefined;
+        }
+
         return WrappedComponent.prototype.render;
       }
 
