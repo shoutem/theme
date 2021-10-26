@@ -214,7 +214,9 @@ export default function connectStyle(
 
       isRefDefined() {
         // Define refs on all stateful containers
-        return WrappedComponent.prototype.render;
+        // Since react-redux v7, connect returns objects instead of functions.
+        // prototype can be null now
+        return WrappedComponent.prototype?.render;
       }
 
       resolveAddedProps() {
