@@ -67,11 +67,19 @@ export default class Theme {
     this[THEME_STYLE] = resolveStyle(themeStyle);
     this[THEME_STYLE_CACHE] = {};
 
-    _.forEach(this.subscriptions, callback => callback(this));
+    _.forEach(this.subscriptions, subscription => subscription.callback(this));
   }
 
-  subscribe(callback) {
-    this.subscriptions.push(callback);
+  subscribe({ componentName, callback }) {
+    if (!componentName || !callback) {
+      throw new Error('Invalid call to theme subscribe. Please provide valid componentName and callback properties');
+    }
+
+    this.subscriptions.push({ componentName, callback });
+  }
+
+  unsubscribe(componentName) {
+    _.remove(this.subscriptions, subscription => subscription.componentName === componentName);
   }
 
   /**

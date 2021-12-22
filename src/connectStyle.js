@@ -54,6 +54,7 @@ export default function connectStyle(
 
   return function wrapWithStyledComponent(WrappedComponent) {
     const componentDisplayName = getComponentDisplayName(WrappedComponent);
+    const themeSubscriberName = _.uniqueId(`${componentDisplayName}_`);
 
     if (!_.isPlainObject(componentStyle)) {
       throwConnectStyleError(
@@ -118,8 +119,10 @@ export default function connectStyle(
       }
 
       componentDidMount() {
-        this.context.theme.subscribe(() => {
-          this.setState({ themeChange: true }, this.forceUpdate);
+        this.context.theme.subscribe({
+          callback: () => {
+            this.setState({ themeChange: true }, this.forceUpdate);
+          }, componentName: themeSubscriberName
         });
       }
 
@@ -140,6 +143,10 @@ export default function connectStyle(
             themeChange: false,
           });
         }
+      }
+
+      componentWillUnmount() {
+        this.context.theme.unsubscribe(themeSubscriberName);
       }
 
       setNativeProps(nativeProps) {
