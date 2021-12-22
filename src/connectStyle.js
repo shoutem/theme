@@ -1,11 +1,11 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Children, isValidElement, cloneElement } from 'react';
 import autoBindReact from 'auto-bind/react';
 import hoistStatics from 'hoist-non-react-statics';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import normalizeStyle from './StyleNormalizer/normalizeStyle';
 import resolveComponentStyle from './resolveComponentStyle';
-import Theme, { ThemeShape } from './Theme';
+import { ThemeShape } from './Theme';
 
 // TODO - remove withRef warning in next version
 
@@ -19,19 +19,6 @@ function throwConnectStyleError(errorMessage, componentDisplayName) {
   throw Error(
     `${errorMessage} - when connecting ${componentDisplayName} component to style.`,
   );
-}
-
-/**
- * Returns the theme object from the provided context,
- * or an empty theme if the context doesn't contain a theme.
- *
- * @param context The React component context.
- * @returns {Theme} The Theme object.
- */
-function getTheme(context) {
-  // Fallback to a default theme if the component isn't
-  // rendered in a StyleProvider.
-  return context.theme || Theme.getDefaultTheme();
 }
 
 /**
@@ -83,19 +70,6 @@ export default function connectStyle(
     }
 
     class StyledComponent extends PureComponent {
-      static contextTypes = {
-        theme: ThemeShape,
-        // The style inherited from the parent
-        parentStyle: PropTypes.object,
-        transformProps: PropTypes.func,
-      };
-
-      static childContextTypes = {
-        // Provide the parent style to child components
-        parentStyle: PropTypes.object,
-        transformProps: PropTypes.func,
-      };
-
       static propTypes = {
         // Element style that overrides any other style of the component
         style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
@@ -107,10 +81,16 @@ export default function connectStyle(
         // will behave as they are placed directly below
         // the parent of a virtual element.
         virtual: PropTypes.bool,
+        parentStyle: PropTypes.object,
+        transformProps: PropTypes.func,
       };
 
       static defaultProps = {
         virtual: options.virtual,
+      };
+
+      static contextTypes = {
+        theme: ThemeShape,
       };
 
       static displayName = `Styled(${componentDisplayName})`;
@@ -133,18 +113,14 @@ export default function connectStyle(
           // such as theme style, or through options
           addedProps: this.resolveAddedProps(),
           styleNames,
+          themeChange: false,
         };
       }
 
-      getChildContext() {
-        const virtual = _.get(this.props, 'virtual');
-        const parentStyle = _.get(this.context, 'parentStyle');
-        const childrenStyle = _.get(this.state, 'childrenStyle');
-
-        return {
-          parentStyle: virtual ? parentStyle : childrenStyle,
-          transformProps: this.transformProps,
-        };
+      componentDidMount() {
+        this.context.theme.subscribe(() => {
+          this.setState({ themeChange: true }, this.forceUpdate);
+        });
       }
 
       componentDidUpdate(prevProps) {
@@ -161,6 +137,7 @@ export default function connectStyle(
             style: resolvedStyle.componentStyle,
             childrenStyle: resolvedStyle.childrenStyle,
             styleNames,
+            themeChange: false,
           });
         }
       }
@@ -193,9 +170,13 @@ export default function connectStyle(
       }
 
       shouldRebuildStyle(prevProps, styleNames) {
+        const { themeChange } = this.state;
+
         return (
           prevProps.style !== this.props.style ||
           prevProps.styleName !== this.props.styleName ||
+          prevProps.parentStyle !== this.props.parentStyle ||
+          themeChange ||
           this.hasStyleNameChanged(prevProps, styleNames)
         );
       }
@@ -232,11 +213,10 @@ export default function connectStyle(
       }
 
       resolveStyle(context, props, styleNames) {
-        const { parentStyle } = context;
-        const style = normalizeStyle(props.style);
+        const { parentStyle, style } = props;
+        const normalizedStyle = normalizeStyle(style);
 
-        const theme = getTheme(context);
-        const themeStyle = theme.createComponentStyle(
+        const themeStyle = context.theme.createComponentStyle(
           componentStyleName,
           componentStyle,
         );
@@ -246,7 +226,7 @@ export default function connectStyle(
           styleNames,
           themeStyle,
           parentStyle,
-          style,
+          normalizedStyle,
         );
       }
 
@@ -272,10 +252,27 @@ export default function connectStyle(
       }
 
       render() {
-        const { addedProps, style } = this.state;
+        const { virtual, parentStyle, children, ...otherProps } = this.props;
+        const { addedProps, style, childrenStyle } = this.state;
+
+        const resolvedParentStyle = virtual ? parentStyle : childrenStyle;
+
+        const childrenWithProps = Children.map(children, child => {
+          if (isValidElement(child)) {
+            return cloneElement(child, { parentStyle: resolvedParentStyle, transformProps: this.transformProps })
+          }
+
+          return child;
+        });
 
         return (
-          <WrappedComponent {...this.props} {...addedProps} style={style} />
+          <WrappedComponent
+            {...otherProps}
+            {...addedProps}
+            style={style}
+          >
+            {childrenWithProps}
+          </WrappedComponent>
         );
       }
     }

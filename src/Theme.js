@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 import mergeComponentAndThemeStyles from './mergeComponentAndThemeStyles';
 import resolveIncludes from './resolveIncludes';
 import normalizeStyle from './StyleNormalizer/normalizeStyle';
@@ -38,6 +39,7 @@ const resolveStyle = (style, baseStyle) =>
  */
 export default class Theme {
   constructor(themeStyle) {
+    this.subscriptions = [];
     this[THEME_STYLE] = resolveStyle(themeStyle);
     this[THEME_STYLE_CACHE] = {};
   }
@@ -59,6 +61,17 @@ export default class Theme {
     }
 
     return defaultTheme;
+  }
+
+  setTheme(themeStyle) {
+    this[THEME_STYLE] = resolveStyle(themeStyle);
+    this[THEME_STYLE_CACHE] = {};
+
+    _.forEach(this.subscriptions, callback => callback(this));
+  }
+
+  subscribe(callback) {
+    this.subscriptions.push(callback);
   }
 
   /**
@@ -99,4 +112,6 @@ export default class Theme {
 
 export const ThemeShape = PropTypes.shape({
   createComponentStyle: PropTypes.func.isRequired,
+  [THEME_STYLE]: PropTypes.object,
+  [THEME_STYLE_CACHE]: PropTypes.object,
 });
