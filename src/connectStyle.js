@@ -92,6 +92,15 @@ export default function connectStyle(
 
       static contextTypes = {
         theme: ThemeShape,
+        // The style inherited from the parent
+        parentStyle: PropTypes.object,
+        transformProps: PropTypes.func,
+      };
+
+      static childContextTypes = {
+        // Provide the parent style to child components
+        parentStyle: PropTypes.object,
+        transformProps: PropTypes.func,
       };
 
       static displayName = `Styled(${componentDisplayName})`;
@@ -115,38 +124,57 @@ export default function connectStyle(
           addedProps: this.resolveAddedProps(),
           styleNames,
           themeChange: false,
+          localParentStyle: context.parentStyle,
         };
       }
 
       componentDidMount() {
         this.context.theme.subscribe({
           callback: () => {
-            this.setState({ themeChange: true }, this.forceUpdate);
+            this.setState({ themeChange: true });
           }, componentName: themeSubscriberName
         });
+      }
+
+      getChildContext() {
+        const virtual = _.get(this.props, 'virtual');
+        const parentStyle = _.get(this.context, 'parentStyle');
+        const childrenStyle = _.get(this.state, 'childrenStyle');
+
+        return {
+          parentStyle: virtual ? parentStyle : childrenStyle,
+          transformProps: this.transformProps,
+        };
       }
 
       componentDidUpdate(prevProps) {
         const styleNames = this.resolveStyleNames(this.props);
 
         if (this.shouldRebuildStyle(prevProps, styleNames)) {
-          const resolvedStyle = this.resolveStyle(
-            this.context,
-            this.props,
-            styleNames,
-          );
-
-          this.setState({
-            style: resolvedStyle.componentStyle,
-            childrenStyle: resolvedStyle.childrenStyle,
-            styleNames,
-            themeChange: false,
-          });
+          this.rebuildStyle();
         }
       }
 
       componentWillUnmount() {
         this.context.theme.unsubscribe(themeSubscriberName);
+      }
+
+      rebuildStyle() {
+        const styleNames = this.resolveStyleNames(this.props);
+
+        const resolvedStyle = this.resolveStyle(
+          this.context,
+          this.props,
+          styleNames,
+        );
+
+        this.setState({
+          style: resolvedStyle.componentStyle,
+          childrenStyle: resolvedStyle.childrenStyle,
+          styleNames,
+          themeChange: false,
+          localParentStyle: this.context.parentStyle,
+        });
       }
 
       setNativeProps(nativeProps) {
@@ -168,7 +196,7 @@ export default function connectStyle(
         const stateStyleNames = _.get(this.state, 'styleNames');
 
         return (
-          mapPropsToStyleNames &&
+          !!mapPropsToStyleNames &&
           this.props !== prevProps &&
           // Even though props did change here, it doesn't necessarily mean
           // props that affect styleName have changed
@@ -177,14 +205,14 @@ export default function connectStyle(
       }
 
       shouldRebuildStyle(prevProps, styleNames) {
-        const { themeChange } = this.state;
+        const { themeChange, localParentStyle } = this.state;
 
         return (
           prevProps.style !== this.props.style ||
           prevProps.styleName !== this.props.styleName ||
-          prevProps.parentStyle !== this.props.parentStyle ||
           themeChange ||
-          this.hasStyleNameChanged(prevProps, styleNames)
+          this.hasStyleNameChanged(prevProps, styleNames) ||
+          !_.isEqual(localParentStyle, this.context.parentStyle)
         );
       }
 
@@ -220,7 +248,8 @@ export default function connectStyle(
       }
 
       resolveStyle(context, props, styleNames) {
-        const { parentStyle, style } = props;
+        const { style } = props;
+        const { parentStyle } = context;
         const normalizedStyle = normalizeStyle(style);
 
         const themeStyle = context.theme.createComponentStyle(
@@ -259,27 +288,10 @@ export default function connectStyle(
       }
 
       render() {
-        const { virtual, parentStyle, children, ...otherProps } = this.props;
-        const { addedProps, style, childrenStyle } = this.state;
-
-        const resolvedParentStyle = virtual ? parentStyle : childrenStyle;
-
-        const childrenWithProps = Children.map(children, child => {
-          if (isValidElement(child)) {
-            return cloneElement(child, { parentStyle: resolvedParentStyle, transformProps: this.transformProps })
-          }
-
-          return child;
-        });
+        const { addedProps, style } = this.state;
 
         return (
-          <WrappedComponent
-            {...otherProps}
-            {...addedProps}
-            style={style}
-          >
-            {childrenWithProps}
-          </WrappedComponent>
+          <WrappedComponent {...this.props} {...addedProps} style={style} />
         );
       }
     }
