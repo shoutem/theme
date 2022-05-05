@@ -1,6 +1,6 @@
 {
   "name": "@shoutem/theme",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "main": "index.js",
   "description": "Style your components in one place.",
   "scripts": {
