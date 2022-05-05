@@ -29,9 +29,9 @@ export default class StyleProvider extends PureComponent {
   }
 
   componentDidUpdate(prevProps) {
+    const { style } = this.props;
     const { theme } = this.state;
     const { style: prevStyle } = prevProps;
-    const { style } = this.props;
 
     if (style !== prevStyle) {
       theme.setTheme(style);
