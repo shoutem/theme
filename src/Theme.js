@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 import mergeComponentAndThemeStyles from './mergeComponentAndThemeStyles';
 import resolveIncludes from './resolveIncludes';
 import normalizeStyle from './StyleNormalizer/normalizeStyle';
@@ -38,6 +39,7 @@ const resolveStyle = (style, baseStyle) =>
  */
 export default class Theme {
   constructor(themeStyle) {
+    this.subscriptions = [];
     this[THEME_STYLE] = resolveStyle(themeStyle);
     this[THEME_STYLE_CACHE] = {};
   }
@@ -59,6 +61,25 @@ export default class Theme {
     }
 
     return defaultTheme;
+  }
+
+  setTheme(themeStyle) {
+    this[THEME_STYLE] = resolveStyle(themeStyle);
+    this[THEME_STYLE_CACHE] = {};
+
+    _.forEach(this.subscriptions, subscription => subscription.callback(this));
+  }
+
+  subscribe({ componentName, callback }) {
+    if (!componentName || !callback) {
+      throw new Error('Invalid call to theme subscribe. Please provide valid componentName and callback properties');
+    }
+
+    this.subscriptions.push({ componentName, callback });
+  }
+
+  unsubscribe(componentName) {
+    _.remove(this.subscriptions, subscription => subscription.componentName === componentName);
   }
 
   /**
@@ -99,4 +120,6 @@ export default class Theme {
 
 export const ThemeShape = PropTypes.shape({
   createComponentStyle: PropTypes.func.isRequired,
+  [THEME_STYLE]: PropTypes.object,
+  [THEME_STYLE_CACHE]: PropTypes.object,
 });

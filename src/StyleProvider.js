@@ -5,6 +5,7 @@ import Theme, { ThemeShape } from './Theme';
 /**
  *  Provides a theme to child components trough context.
  */
+
 export default class StyleProvider extends PureComponent {
   static propTypes = {
     children: PropTypes.element.isRequired,
@@ -19,21 +20,22 @@ export default class StyleProvider extends PureComponent {
     theme: ThemeShape.isRequired,
   };
 
-  static getDerivedStateFromProps(props, state) {
-    return props.style === state.style
-      ? state
-      : {
-          style: props.style,
-          theme: new Theme(props.style),
-        };
-  }
-
   constructor(props, context) {
     super(props, context);
 
     this.state = {
       theme: new Theme(props.style),
     };
+  }
+
+  componentDidUpdate(prevProps) {
+    const { style } = this.props;
+    const { theme } = this.state;
+    const { style: prevStyle } = prevProps;
+
+    if (style !== prevStyle) {
+      theme.setTheme(style);
+    }
   }
 
   getChildContext() {
