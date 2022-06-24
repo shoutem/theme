@@ -36,7 +36,7 @@
     "eslint-plugin-simple-import-sort": "7.0.0",
     "jest": "27.4.7",
     "jest-enzyme": "7.1.2",
-    "jsdom": "16.4.0",
+    "jsdom": "16.5.0",
     "jsdom-global": "3.0.2",
     "metro-react-native-babel-preset": "0.63.0",
     "prettier": "1.19.1"
