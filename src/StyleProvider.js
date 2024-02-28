@@ -47,6 +47,6 @@ export default class StyleProvider extends PureComponent {
   render() {
     const { children } = this.props;
 
-    return Children.only(children);
+    return children;
   }
 }
