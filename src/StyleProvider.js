@@ -8,7 +8,7 @@ import Theme, { ThemeShape } from './Theme';
 
 export default class StyleProvider extends PureComponent {
   static propTypes = {
-    children: PropTypes.element.isRequired,
+    children: PropTypes.node.isRequired,
     style: PropTypes.object,
   };
 
