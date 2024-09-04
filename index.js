@@ -9,11 +9,6 @@ import {
   getSizeRelativeToReference,
   inverseColorBrightnessForAmount,
 } from './src/addons';
-import Shapes from './examples/Shapes';
-
-const Examples = {
-  Shapes,
-};
 
 export {
   connectStyle,
@@ -23,7 +18,6 @@ export {
   ThemeShape,
   createVariations,
   createSharedStyle,
-  Examples,
   changeColorAlpha,
   getSizeRelativeToReference,
   inverseColorBrightnessForAmount,
