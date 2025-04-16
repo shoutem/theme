@@ -1,6 +1,12 @@
-import { PureComponent, Children } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import Theme, { ThemeShape } from './Theme';
+import Theme from './Theme';
+
+export const ThemeContext = React.createContext({
+  theme: null,
+  parentStyle: null,
+  transformProps: () => {},
+});
 
 /**
  *  Provides a theme to child components trough context.
@@ -14,10 +20,6 @@ export default class StyleProvider extends PureComponent {
 
   static defaultProps = {
     style: {},
-  };
-
-  static childContextTypes = {
-    theme: ThemeShape.isRequired,
   };
 
   constructor(props, context) {
@@ -38,15 +40,14 @@ export default class StyleProvider extends PureComponent {
     }
   }
 
-  getChildContext() {
-    const { theme } = this.state;
-
-    return { theme };
-  }
-
   render() {
+    const { theme } = this.state;
     const { children } = this.props;
 
-    return children;
+    return (
+      <ThemeContext.Provider value={{ theme }}>
+        {children}
+      </ThemeContext.Provider>
+    );
   }
 }

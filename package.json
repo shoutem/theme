@@ -1,6 +1,6 @@
 {
   "name": "@shoutem/theme",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "main": "index.js",
   "description": "Style your components in one place.",
   "scripts": {
@@ -15,9 +15,9 @@
     "tinycolor2": "1.4.2"
   },
   "peerDependencies": {
-    "react": ">=16.3.1",
-    "react-native": ">=0.63.2",
-    "prop-types": ">=15.5.10"
+    "react": ">=19.0.0",
+    "react-native": ">=0.78.0",
+    "prop-types": ">=15.7.1"
   },
   "devDependencies": {
     "@babel/core": "7.16.7",
