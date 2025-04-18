@@ -4,8 +4,8 @@ import Theme from './Theme';
 
 export const ThemeContext = React.createContext({
   theme: null,
-  parentStyle: null,
-  transformProps: () => {},
+  parentStyle: {},
+  transformProps: props => props,
 });
 
 /**
@@ -25,27 +25,23 @@ export default class StyleProvider extends PureComponent {
   constructor(props, context) {
     super(props, context);
 
-    this.state = {
-      theme: new Theme(props.style),
-    };
+    this.theme = new Theme(props.style);
   }
 
   componentDidUpdate(prevProps) {
     const { style } = this.props;
-    const { theme } = this.state;
     const { style: prevStyle } = prevProps;
 
     if (style !== prevStyle) {
-      theme.setTheme(style);
+      this.theme.setTheme(style);
     }
   }
 
   render() {
-    const { theme } = this.state;
     const { children } = this.props;
 
     return (
-      <ThemeContext.Provider value={{ theme }}>
+      <ThemeContext.Provider value={{ theme: this.theme }}>
         {children}
       </ThemeContext.Provider>
     );
