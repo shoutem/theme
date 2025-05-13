@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import Theme from './Theme';
 
 export const ThemeContext = React.createContext({
@@ -17,6 +18,16 @@ const StyleProvider = ({ children, style }) => {
       {children}
     </ThemeContext.Provider>
   );
-}
+};
+
+StyleProvider.propTypes = {
+  children: PropTypes.node,
+  style: PropTypes.object,
+};
+
+StyleProvider.defaultProps = {
+  children: undefined,
+  style: {},
+};
 
 export default StyleProvider;

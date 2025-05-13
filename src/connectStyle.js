@@ -87,6 +87,8 @@ export default function connectStyle(
       static contextType = ThemeContext;
 
       static propTypes = {
+        children: PropTypes.node,
+        parentStyle: PropTypes.object,
         // Element style that overrides any other style of the component
         style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
         // The style variant names to apply to this component,
@@ -100,6 +102,8 @@ export default function connectStyle(
       };
 
       static defaultProps = {
+        children: undefined,
+        parentStyle: {},
         style: {},
         styleName: undefined,
         virtual: options.virtual,
@@ -248,18 +252,21 @@ export default function connectStyle(
       }
 
       render() {
+        const { children } = this.props;
         const { addedProps, style } = this.state;
 
-        const newChildren = React.Children.map(this.props.children, (child) => {
+        const newChildren = React.Children.map(children, child => {
           if (!React.isValidElement(child)) return child;
-    
+
           return React.cloneElement(child, {
             ...this.calculateChildProps(),
           });
         });
 
         return (
-            <WrappedComponent {...this.props} {...addedProps} style={style} children={newChildren} />
+          <WrappedComponent {...this.props} {...addedProps} style={style}>
+            {newChildren}
+          </WrappedComponent>
         );
       }
     }
