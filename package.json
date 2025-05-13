@@ -1,6 +1,6 @@
 {
   "name": "@shoutem/theme",
-  "version": "1.0.0-rc.0",
+  "version": "1.0.0-rc.1",
   "main": "index.js",
   "description": "Style your components in one place.",
   "scripts": {
@@ -42,20 +42,12 @@
   "license": "BSD-3-Clause",
   "maintainers": [
     {
-      "email": "lucija.tatarevic@shoutem.com",
-      "name": "ltatarev"
-    },
-    {
       "email": "slavko@shoutem.com",
       "name": "sstimac"
     },
     {
       "email": "tomislav.arambasic@shoutem.com",
       "name": "tomislav-arambasic"
-    },
-    {
-      "email": "vlad@definitely-not-vlad.com",
-      "name": "Definitely-Not-Vlad"
     }
   ],
   "eslintConfig": {
