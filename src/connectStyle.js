@@ -130,16 +130,13 @@ export default function connectStyle(
         };
       }
 
-      calculateChildContext() {
-        const { theme } = this.context;
+      calculateChildProps() {
         const virtual = _.get(this.props, 'virtual');
-        const parentStyle = _.get(this.context, 'parentStyle');
+        const parentStyle = _.get(this.props, 'parentStyle');
         const childrenStyle = _.get(this.state, 'childrenStyle');
 
         return {
-          theme,
           parentStyle: virtual ? parentStyle : childrenStyle,
-          transformProps: this.transformProps,
         };
       }
 
@@ -189,11 +186,12 @@ export default function connectStyle(
       }
 
       shouldRebuildStyle(prevProps, styleNames) {
-        const { style, styleName } = this.props;
+        const { style, styleName, parentStyle } = this.props;
 
         return (
           prevProps.style !== style ||
           prevProps.styleName !== styleName ||
+          prevProps.parentStyle !== parentStyle ||
           this.hasStyleNameChanged(prevProps, styleNames)
         );
       }
@@ -230,10 +228,11 @@ export default function connectStyle(
       }
 
       resolveStyle(context, props, styleNames) {
-        const { parentStyle } = context;
+        const { parentStyle } = props;
         const style = normalizeStyle(props.style);
 
         const theme = getTheme(context);
+
         const themeStyle = theme.createComponentStyle(
           componentStyleName,
           componentStyle,
@@ -248,30 +247,19 @@ export default function connectStyle(
         );
       }
 
-      /**
-       * A helper function provided to child components that enables
-       * them to get the prop transformations that this component performs.
-       *
-       * @param props The component props to transform.
-       * @returns {*} The transformed props.
-       */
-      transformProps(props) {
-        const styleNames = this.resolveStyleNames(props);
-
-        return {
-          ...props,
-          style: this.resolveStyle(this.context, props, styleNames)
-            .componentStyle,
-        };
-      }
-
       render() {
         const { addedProps, style } = this.state;
 
+        const newChildren = React.Children.map(this.props.children, (child) => {
+          if (!React.isValidElement(child)) return child;
+    
+          return React.cloneElement(child, {
+            ...this.calculateChildProps(),
+          });
+        });
+
         return (
-          <ThemeContext.Provider value={this.calculateChildContext()}>
-            <WrappedComponent {...this.props} {...addedProps} style={style} />
-          </ThemeContext.Provider>
+            <WrappedComponent {...this.props} {...addedProps} style={style} children={newChildren} />
         );
       }
     }
