@@ -255,13 +255,19 @@ export default function connectStyle(
         const { children } = this.props;
         const { addedProps, style } = this.state;
 
-        const newChildren = React.Children.map(children, child => {
+        const mappedChildren = React.Children.map(children, child => {
           if (!React.isValidElement(child)) return child;
 
           return React.cloneElement(child, {
             ...this.calculateChildProps(),
           });
         });
+
+        // some of the wrapped components require a singular child ( Children.only )
+        // so we need to make sure we respect that in case of a singular child, and avoid creating
+        // an array of children
+        const newChildren =
+          mappedChildren?.length === 1 ? mappedChildren[0] : mappedChildren;
 
         return (
           <WrappedComponent {...this.props} {...addedProps} style={style}>
