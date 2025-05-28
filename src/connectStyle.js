@@ -256,7 +256,8 @@ export default function connectStyle(
         const { addedProps, style } = this.state;
 
         const mappedChildren = React.Children.map(children, child => {
-          if (!React.isValidElement(child)) return child;
+          if (!React.isValidElement(child) || child.type === React.Fragment)
+            return child;
 
           return React.cloneElement(child, {
             ...this.calculateChildProps(),
