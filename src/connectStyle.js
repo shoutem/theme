@@ -8,6 +8,10 @@ import resolveComponentStyle from './resolveComponentStyle';
 import { ThemeContext } from './StyleProvider';
 import Theme from './Theme';
 
+export const StylePropagationContext = React.createContext({
+  parentStyle: {},
+});
+
 // TODO - remove withRef warning in next version
 
 /**
@@ -88,7 +92,6 @@ export default function connectStyle(
 
       static propTypes = {
         children: PropTypes.node,
-        parentStyle: PropTypes.object,
         // Element style that overrides any other style of the component
         style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
         // The style variant names to apply to this component,
@@ -103,7 +106,6 @@ export default function connectStyle(
 
       static defaultProps = {
         children: undefined,
-        parentStyle: {},
         style: {},
         styleName: undefined,
         virtual: options.virtual,
@@ -119,13 +121,10 @@ export default function connectStyle(
         super(props, context);
 
         const styleNames = this.resolveStyleNames(props);
-        const resolvedStyle = this.resolveStyle(context, props, styleNames);
 
         autoBindReact(this);
 
         this.state = {
-          style: resolvedStyle.componentStyle,
-          childrenStyle: resolvedStyle.childrenStyle,
           // AddedProps are additional WrappedComponent props
           // Usually they are set through alternative ways,
           // such as theme style, or through options
@@ -134,42 +133,13 @@ export default function connectStyle(
         };
       }
 
-      calculateChildProps() {
-        const virtual = _.get(this.props, 'virtual');
-        const parentStyle = _.get(this.props, 'parentStyle');
-        const childrenStyle = _.get(this.state, 'childrenStyle');
-
-        return {
-          parentStyle: virtual ? parentStyle : childrenStyle,
-        };
-      }
-
       componentDidUpdate(prevProps) {
         const styleNames = this.resolveStyleNames(this.props);
 
         if (this.shouldRebuildStyle(prevProps, styleNames)) {
-          const resolvedStyle = this.resolveStyle(
-            this.context,
-            this.props,
-            styleNames,
-          );
-
           this.setState({
-            style: resolvedStyle.componentStyle,
-            childrenStyle: resolvedStyle.childrenStyle,
             styleNames,
           });
-        }
-      }
-
-      setNativeProps(nativeProps) {
-        if (!this.isRefDefined()) {
-          // eslint-disable-next-line no-console
-          console.warn("setNativeProps can't be used on stateless components");
-          return;
-        }
-        if (this.wrappedInstance.setNativeProps) {
-          this.wrappedInstance.setNativeProps(nativeProps);
         }
       }
 
@@ -190,12 +160,11 @@ export default function connectStyle(
       }
 
       shouldRebuildStyle(prevProps, styleNames) {
-        const { style, styleName, parentStyle } = this.props;
+        const { style, styleName } = this.props;
 
         return (
           prevProps.style !== style ||
           prevProps.styleName !== styleName ||
-          prevProps.parentStyle !== parentStyle ||
           this.hasStyleNameChanged(prevProps, styleNames)
         );
       }
@@ -231,11 +200,9 @@ export default function connectStyle(
         return addedProps;
       }
 
-      resolveStyle(context, props, styleNames) {
-        const { parentStyle } = props;
-        const style = normalizeStyle(props.style);
-
-        const theme = getTheme(context);
+      resolveStyle(theme, parentStyle) {
+        const { styleNames } = this.state;
+        const style = normalizeStyle(this.props.style);
 
         const themeStyle = theme.createComponentStyle(
           componentStyleName,
@@ -252,28 +219,34 @@ export default function connectStyle(
       }
 
       render() {
-        const { children } = this.props;
-        const { addedProps, style } = this.state;
-
-        const mappedChildren = React.Children.map(children, child => {
-          if (!React.isValidElement(child) || child.type === React.Fragment)
-            return child;
-
-          return React.cloneElement(child, {
-            ...this.calculateChildProps(),
-          });
-        });
-
-        // some of the wrapped components require a singular child ( Children.only )
-        // so we need to make sure we respect that in case of a singular child, and avoid creating
-        // an array of children
-        const newChildren =
-          mappedChildren?.length === 1 ? mappedChildren[0] : mappedChildren;
+        const { addedProps } = this.state;
+        const { virtual } = this.props;
 
         return (
-          <WrappedComponent {...this.props} {...addedProps} style={style}>
-            {newChildren}
-          </WrappedComponent>
+          <StylePropagationContext.Consumer>
+            {({ parentStyle: contextParentStyle }) => {
+              const theme = getTheme(this.context);
+              const resolvedStyle = this.resolveStyle(
+                theme,
+                contextParentStyle,
+              );
+              const childStyle = virtual
+                ? contextParentStyle
+                : resolvedStyle.childrenStyle;
+
+              return (
+                <StylePropagationContext.Provider
+                  value={{ parentStyle: childStyle }}
+                >
+                  <WrappedComponent
+                    {...this.props}
+                    {...addedProps}
+                    style={resolvedStyle.componentStyle}
+                  />
+                </StylePropagationContext.Provider>
+              );
+            }}
+          </StylePropagationContext.Consumer>
         );
       }
     }
