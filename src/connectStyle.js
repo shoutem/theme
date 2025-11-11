@@ -124,6 +124,11 @@ export default function connectStyle(
 
         autoBindReact(this);
 
+        // Add memoization cache
+        this.styleCache = new Map();
+        this.lastStyleKey = null;
+        this.lastResolvedStyle = null;
+
         this.state = {
           // AddedProps are additional WrappedComponent props
           // Usually they are set through alternative ways,
@@ -137,6 +142,11 @@ export default function connectStyle(
         const styleNames = this.resolveStyleNames(this.props);
 
         if (this.shouldRebuildStyle(prevProps, styleNames)) {
+          // Clear style cache when style needs to be rebuilt
+          this.styleCache.clear();
+          this.lastStyleKey = null;
+          this.lastResolvedStyle = null;
+
           this.setState({
             styleNames,
           });
@@ -200,22 +210,67 @@ export default function connectStyle(
         return addedProps;
       }
 
+      // Create a cache key for style resolution
+      createStyleCacheKey(theme, parentStyle, styleNames, propsStyle) {
+        const themeId = theme.id || 'default';
+        const parentStyleHash = JSON.stringify(parentStyle);
+        const styleNamesHash = JSON.stringify(styleNames);
+        const propsStyleHash = JSON.stringify(propsStyle);
+
+        return `${themeId}:${parentStyleHash}:${styleNamesHash}:${propsStyleHash}`;
+      }
+
       resolveStyle(theme, parentStyle) {
         const { styleNames } = this.state;
         const style = normalizeStyle(this.props.style);
 
+        // Create cache key based on all style inputs
+        const cacheKey = this.createStyleCacheKey(
+          theme,
+          parentStyle,
+          styleNames,
+          style,
+        );
+
+        // Return cached result if key matches
+        if (this.lastStyleKey === cacheKey && this.lastResolvedStyle) {
+          return this.lastResolvedStyle;
+        }
+
+        // Check Map cache for different key combinations
+        if (this.styleCache.has(cacheKey)) {
+          const cachedStyle = this.styleCache.get(cacheKey);
+          this.lastStyleKey = cacheKey;
+          this.lastResolvedStyle = cachedStyle;
+          return cachedStyle;
+        }
+
+        // Resolve style only when cache miss
         const themeStyle = theme.createComponentStyle(
           componentStyleName,
           componentStyle,
         );
 
-        return resolveComponentStyle(
+        const resolvedStyle = resolveComponentStyle(
           componentStyleName,
           styleNames,
           themeStyle,
           parentStyle,
           style,
         );
+
+        // Cache the result
+        this.styleCache.set(cacheKey, resolvedStyle);
+        this.lastStyleKey = cacheKey;
+        this.lastResolvedStyle = resolvedStyle;
+
+        // Limit cache size to prevent memory leaks
+        if (this.styleCache.size > 50) {
+          const firstKey = this.styleCache.keys().next().value;
+          this.styleCache.delete(firstKey);
+        }
+
+        return resolvedStyle;
       }
 
       render() {
