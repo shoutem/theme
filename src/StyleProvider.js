@@ -1,52 +1,33 @@
-import { PureComponent, Children } from 'react';
+import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import Theme, { ThemeShape } from './Theme';
+import Theme from './Theme';
 
-/**
- *  Provides a theme to child components trough context.
- */
+export const ThemeContext = React.createContext({
+  theme: null,
+});
 
-export default class StyleProvider extends PureComponent {
-  static propTypes = {
-    children: PropTypes.node.isRequired,
-    style: PropTypes.object,
-  };
+const StyleProvider = ({ children, style }) => {
+  const theme = useRef(new Theme(style));
 
-  static defaultProps = {
-    style: {},
-  };
+  useEffect(() => {
+    theme.current?.setTheme(style);
+  }, [style]);
 
-  static childContextTypes = {
-    theme: ThemeShape.isRequired,
-  };
+  return (
+    <ThemeContext.Provider value={{ theme: theme.current }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
 
-  constructor(props, context) {
-    super(props, context);
+StyleProvider.propTypes = {
+  children: PropTypes.node,
+  style: PropTypes.object,
+};
 
-    this.state = {
-      theme: new Theme(props.style),
-    };
-  }
+StyleProvider.defaultProps = {
+  children: undefined,
+  style: {},
+};
 
-  componentDidUpdate(prevProps) {
-    const { style } = this.props;
-    const { theme } = this.state;
-    const { style: prevStyle } = prevProps;
-
-    if (style !== prevStyle) {
-      theme.setTheme(style);
-    }
-  }
-
-  getChildContext() {
-    const { theme } = this.state;
-
-    return { theme };
-  }
-
-  render() {
-    const { children } = this.props;
-
-    return children;
-  }
-}
+export default StyleProvider;

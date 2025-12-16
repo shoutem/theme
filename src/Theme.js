@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
+import normalizeStyle from './StyleNormalizer/normalizeStyle';
 import mergeComponentAndThemeStyles from './mergeComponentAndThemeStyles';
 import resolveIncludes from './resolveIncludes';
-import normalizeStyle from './StyleNormalizer/normalizeStyle';
 
 // Privates, ideally those should be symbols
 const THEME_STYLE = '@@shoutem.theme/themeStyle';
@@ -72,14 +72,19 @@ export default class Theme {
 
   subscribe({ componentName, callback }) {
     if (!componentName || !callback) {
-      throw new Error('Invalid call to theme subscribe. Please provide valid componentName and callback properties');
+      throw new Error(
+        'Invalid call to theme subscribe. Please provide valid componentName and callback properties',
+      );
     }
 
     this.subscriptions.push({ componentName, callback });
   }
 
   unsubscribe(componentName) {
-    _.remove(this.subscriptions, subscription => subscription.componentName === componentName);
+    _.remove(
+      this.subscriptions,
+      subscription => subscription.componentName === componentName,
+    );
   }
 
   /**

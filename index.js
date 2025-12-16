@@ -7,7 +7,7 @@ import {
 } from './src/addons';
 import connectStyle from './src/connectStyle';
 import { INCLUDE } from './src/resolveIncludes';
-import StyleProvider from './src/StyleProvider';
+import StyleProvider, { ThemeContext } from './src/StyleProvider';
 import Theme, { ThemeShape } from './src/Theme';
 
 export {
@@ -20,5 +20,6 @@ export {
   inverseColorBrightnessForAmount,
   StyleProvider,
   Theme,
+  ThemeContext,
   ThemeShape,
 };
