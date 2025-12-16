@@ -5,7 +5,12 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import normalizeStyle from './StyleNormalizer/normalizeStyle';
 import resolveComponentStyle from './resolveComponentStyle';
-import Theme, { ThemeShape } from './Theme';
+import { ThemeContext } from './StyleProvider';
+import Theme from './Theme';
+
+export const StylePropagationContext = React.createContext({
+  parentStyle: {},
+});
 
 // TODO - remove withRef warning in next version
 
@@ -83,20 +88,10 @@ export default function connectStyle(
     }
 
     class StyledComponent extends PureComponent {
-      static contextTypes = {
-        theme: ThemeShape,
-        // The style inherited from the parent
-        parentStyle: PropTypes.object,
-        transformProps: PropTypes.func,
-      };
-
-      static childContextTypes = {
-        // Provide the parent style to child components
-        parentStyle: PropTypes.object,
-        transformProps: PropTypes.func,
-      };
+      static contextType = ThemeContext;
 
       static propTypes = {
+        children: PropTypes.node,
         // Element style that overrides any other style of the component
         style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
         // The style variant names to apply to this component,
@@ -110,24 +105,26 @@ export default function connectStyle(
       };
 
       static defaultProps = {
+        children: undefined,
+        style: {},
+        styleName: undefined,
         virtual: options.virtual,
       };
 
       static displayName = `Styled(${componentDisplayName})`;
+
       static WrappedComponent = WrappedComponent;
+
       static BaseComponent = getBaseComponent(WrappedComponent);
 
       constructor(props, context) {
         super(props, context);
 
         const styleNames = this.resolveStyleNames(props);
-        const resolvedStyle = this.resolveStyle(context, props, styleNames);
 
         autoBindReact(this);
 
         this.state = {
-          style: resolvedStyle.componentStyle,
-          childrenStyle: resolvedStyle.childrenStyle,
           // AddedProps are additional WrappedComponent props
           // Usually they are set through alternative ways,
           // such as theme style, or through options
@@ -136,43 +133,13 @@ export default function connectStyle(
         };
       }
 
-      getChildContext() {
-        const virtual = _.get(this.props, 'virtual');
-        const parentStyle = _.get(this.context, 'parentStyle');
-        const childrenStyle = _.get(this.state, 'childrenStyle');
-
-        return {
-          parentStyle: virtual ? parentStyle : childrenStyle,
-          transformProps: this.transformProps,
-        };
-      }
-
       componentDidUpdate(prevProps) {
         const styleNames = this.resolveStyleNames(this.props);
 
         if (this.shouldRebuildStyle(prevProps, styleNames)) {
-          const resolvedStyle = this.resolveStyle(
-            this.context,
-            this.props,
-            styleNames,
-          );
-
           this.setState({
-            style: resolvedStyle.componentStyle,
-            childrenStyle: resolvedStyle.childrenStyle,
             styleNames,
           });
-        }
-      }
-
-      setNativeProps(nativeProps) {
-        if (!this.isRefDefined()) {
-          // eslint-disable-next-line no-console
-          console.warn("setNativeProps can't be used on stateless components");
-          return;
-        }
-        if (this.wrappedInstance.setNativeProps) {
-          this.wrappedInstance.setNativeProps(nativeProps);
         }
       }
 
@@ -193,9 +160,11 @@ export default function connectStyle(
       }
 
       shouldRebuildStyle(prevProps, styleNames) {
+        const { style, styleName } = this.props;
+
         return (
-          prevProps.style !== this.props.style ||
-          prevProps.styleName !== this.props.styleName ||
+          prevProps.style !== style ||
+          prevProps.styleName !== styleName ||
           this.hasStyleNameChanged(prevProps, styleNames)
         );
       }
@@ -231,11 +200,10 @@ export default function connectStyle(
         return addedProps;
       }
 
-      resolveStyle(context, props, styleNames) {
-        const { parentStyle } = context;
-        const style = normalizeStyle(props.style);
+      resolveStyle(theme, parentStyle) {
+        const { styleNames } = this.state;
+        const style = normalizeStyle(this.props.style);
 
-        const theme = getTheme(context);
         const themeStyle = theme.createComponentStyle(
           componentStyleName,
           componentStyle,
@@ -250,36 +218,39 @@ export default function connectStyle(
         );
       }
 
-      /**
-       * A helper function provided to child components that enables
-       * them to get the prop transformations that this component performs.
-       *
-       * @param props The component props to transform.
-       * @returns {*} The transformed props.
-       */
-      transformProps(props) {
-        const styleNames = this.resolveStyleNames(props);
-        const componentStyle = this.resolveStyle(
-          this.context,
-          props,
-          styleNames,
-        );
-
-        return {
-          ...props,
-          style: this.resolveStyle(this.context, props, styleNames).componentStyle,
-        };
-      }
-
       render() {
-        const { addedProps, style } = this.state;
+        const { addedProps } = this.state;
+        const { virtual } = this.props;
 
         return (
-          <WrappedComponent {...this.props} {...addedProps} style={style} />
+          <StylePropagationContext.Consumer>
+            {({ parentStyle: contextParentStyle }) => {
+              const theme = getTheme(this.context);
+              const resolvedStyle = this.resolveStyle(
+                theme,
+                contextParentStyle,
+              );
+              const childStyle = virtual
+                ? contextParentStyle
+                : resolvedStyle.childrenStyle;
+
+              return (
+                <StylePropagationContext.Provider
+                  value={{ parentStyle: childStyle }}
+                >
+                  <WrappedComponent
+                    {...this.props}
+                    {...addedProps}
+                    style={resolvedStyle.componentStyle}
+                  />
+                </StylePropagationContext.Provider>
+              );
+            }}
+          </StylePropagationContext.Consumer>
         );
       }
     }
 
     return hoistStatics(StyledComponent, WrappedComponent);
   };
-};
+}
