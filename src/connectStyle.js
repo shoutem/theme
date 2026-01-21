@@ -27,19 +27,6 @@ function throwConnectStyleError(errorMessage, componentDisplayName) {
 }
 
 /**
- * Returns the theme object from the provided context,
- * or an empty theme if the context doesn't contain a theme.
- *
- * @param context The React component context.
- * @returns {Theme} The Theme object.
- */
-function getTheme(context) {
-  // Fallback to a default theme if the component isn't
-  // rendered in a StyleProvider.
-  return context.theme || Theme.getDefaultTheme();
-}
-
-/**
  * Resolves the final component style by using the theme style, if available and
  * merging it with the style provided directly through the style prop, and style
  * variants applied through the styleName prop.
@@ -88,8 +75,6 @@ export default function connectStyle(
     }
 
     class StyledComponent extends PureComponent {
-      static contextType = ThemeContext;
-
       static propTypes = {
         children: PropTypes.node,
         // Element style that overrides any other style of the component
@@ -117,8 +102,8 @@ export default function connectStyle(
 
       static BaseComponent = getBaseComponent(WrappedComponent);
 
-      constructor(props, context) {
-        super(props, context);
+      constructor(props) {
+        super(props);
 
         const styleNames = this.resolveStyleNames(props);
 
@@ -278,30 +263,39 @@ export default function connectStyle(
         const { virtual } = this.props;
 
         return (
-          <StylePropagationContext.Consumer>
-            {({ parentStyle: contextParentStyle }) => {
-              const theme = getTheme(this.context);
-              const resolvedStyle = this.resolveStyle(
-                theme,
-                contextParentStyle,
-              );
-              const childStyle = virtual
-                ? contextParentStyle
-                : resolvedStyle.childrenStyle;
+          <ThemeContext.Consumer>
+            {themeContext => {
+              // Fallback to a default theme if the component isn't
+              // rendered in a StyleProvider.
+              const theme = themeContext.theme || Theme.getDefaultTheme();
 
               return (
-                <StylePropagationContext.Provider
-                  value={{ parentStyle: childStyle }}
-                >
-                  <WrappedComponent
-                    {...this.props}
-                    {...addedProps}
-                    style={resolvedStyle.componentStyle}
-                  />
-                </StylePropagationContext.Provider>
+                <StylePropagationContext.Consumer>
+                  {({ parentStyle: contextParentStyle }) => {
+                    const resolvedStyle = this.resolveStyle(
+                      theme,
+                      contextParentStyle,
+                    );
+                    const childStyle = virtual
+                      ? contextParentStyle
+                      : resolvedStyle.childrenStyle;
+
+                    return (
+                      <StylePropagationContext.Provider
+                        value={{ parentStyle: childStyle }}
+                      >
+                        <WrappedComponent
+                          {...this.props}
+                          {...addedProps}
+                          style={resolvedStyle.componentStyle}
+                        />
+                      </StylePropagationContext.Provider>
+                    );
+                  }}
+                </StylePropagationContext.Consumer>
               );
             }}
-          </StylePropagationContext.Consumer>
+          </ThemeContext.Consumer>
         );
       }
     }
